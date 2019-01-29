@@ -1,0 +1,29 @@
+{
+  "name": "ngrx-signalr",
+  "version": "1.0.0",
+  "description": "A library to handle realtime SignalR events using angular and rxjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Odonno/ngrx-signalr.git"
+  },
+  "author": "Odonno",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Odonno/ngrx-signalr/issues"
+  },
+  "homepage": "https://github.com/Odonno/ngrx-signalr#readme",
+  "devDependencies": {
+    "@types/node": "^10.12.19",
+    "typescript": "^3.2.4"
+  },
+  "dependencies": {
+    "@types/signalr": "^2.2.35",
+    "jquery": "^3.3.1",
+    "rxjs": "^6.3.3",
+    "signalr": "^2.4.0"
+  }
+}
