@@ -37,69 +37,74 @@ const toSignalRState = (state: SignalR.ConnectionState): string => {
 class SignalRHub {
     private _connection: SignalR.Hub.Connection | undefined;
     private _proxy: SignalR.Hub.Proxy | undefined;
-    private _start$: Subject<any>;
-    private _state$: Subject<string>;
-    private _error$: Subject<SignalRError>;
+    private _startSubject = new Subject<void>();
+    private _stateSubject = new Subject<string>();
+    private _errorSubject = new Subject<SignalRError>();
     private _subjects: { [name: string]: Subject<any> };
-    private _primePromise: JQueryPromise<any> | undefined;
 
-    get connection(): SignalR.Hub.Connection {
-        return this._connection || (this._connection = this.createConnection());
-    }
+    start$: Observable<void>;
+    state$: Observable<string>;
+    error$: Observable<SignalRError>;
 
-    get proxy(): SignalR.Hub.Proxy {
-        return this._proxy || (this._proxy = this.connection.createHubProxy(this.hubName));
-    }
-
-    get hubName(): string {
-        return this._hubName;
-    }
-
-    get url(): string | undefined {
-        return this._url;
-    }
-
-    get start$(): Observable<void> {
-        return this._start$.asObservable();
-    }
-
-    get state$(): Observable<string> {
-        return this._state$.asObservable();
-    }
-
-    get error$(): Observable<SignalRError> {
-        return this._error$.asObservable();
-    }
-
-    constructor(private _hubName: string, private _url: string | undefined) {
+    constructor(public hubName: string, public url: string | undefined) {
         this._subjects = {};
-        this._start$ = new Subject<void>();
-        this._state$ = new Subject<string>();
-        this._error$ = new Subject<SignalRError>();
+
+        this.start$ = this._startSubject.asObservable();
+        this.state$ = this._stateSubject.asObservable();
+        this.error$ = this._errorSubject.asObservable();
     }
 
     start() {
+        if (!this._connection) {
+            const { connection, error } = this.createConnection();
+            if (error) {
+                this._startSubject.error(error);
+                return;
+            }
+
+            this._connection = connection;
+        }
+
+        if (!this._connection) {
+            this._startSubject.error(new Error('Impossible to start the connection...'));
+            return;
+        }
+
         if (!this.hasSubscriptions()) {
             console.warn('No listeners have been setup. You need to setup a listener before starting the connection or you will not receive data.');
         }
 
-        this.connection.start()
-            .done(_ => this._start$.next())
-            .fail((error) => this._start$.error(error))
+        this._connection.start()
+            .done(_ => this._startSubject.next())
+            .fail((error) => this._startSubject.error(error));
     }
 
     on<T>(event: string): Observable<T> {
+        if (!this._connection) {
+            console.warn('The connection has not been started yet. Please start the connection by invoking the start method before attempting to listen to event type ' + event + '.');
+            return new Observable<T>();
+        }
+
+        if (!this._proxy) {
+            this._proxy = this._connection.createHubProxy(this.hubName);
+        }
+
         const subject = this.getOrCreateSubject<T>(event);
-        this.proxy.on(event, (data: T) => subject.next(data))
+        this._proxy.on(event, (data: T) => subject.next(data));
+
         return subject.asObservable();
     }
 
-    async send(method: string, ...args: any[]): Promise<any> {
-        if (!this._primePromise) {
-            return Promise.reject('The connection has not been started yet. Please start the connection by invoking the start method befor attempting to send a message to the server.');
+    send(method: string, ...args: any[]): Promise<any> {
+        if (!this._connection) {
+            return Promise.reject('The connection has not been started yet. Please start the connection by invoking the start method before attempting to send a message to the server.');
         }
-        await this._primePromise;
-        return this.proxy.invoke(method, ...args);
+
+        if (!this._proxy) {
+            this._proxy = this._connection.createHubProxy(this.hubName);
+        }
+
+        return this._proxy.invoke(method, ...args);
     }
 
     hasSubscriptions(): boolean {
@@ -112,21 +117,34 @@ class SignalRHub {
         return false;
     }
 
+    // TODO : extract function
     private getOrCreateSubject<T>(event: string): Subject<T> {
         return this._subjects[event] || (this._subjects[event] = new Subject<T>());
     }
 
-    private createConnection(): SignalR.Hub.Connection {
-        const connection = $.hubConnection(this._url);
+    // TODO : extract function
+    private createConnection(): { connection?: SignalR.Hub.Connection, error?: Error } {
+        if (!$) {
+            return { error: new Error('jQuery is not defined.') }
+        }
+        if (!$.hubConnection) {
+            return { error: new Error('The $.hubConnection function is not defined. Please check if you imported SignalR correctly.') }
+        }
+
+        const connection = $.hubConnection(this.url);
+
+        if (!connection) {
+            return { error: new Error("Impossible to create the hub '" + this.url + "'.") }
+        }
 
         connection.error((error: SignalR.ConnectionError) =>
-            this._error$.next(error)
+            this._errorSubject.next(error)
         );
         connection.stateChanged((state: SignalR.StateChanged) =>
-            this._state$.next(toSignalRState(state.newState))
+            this._stateSubject.next(toSignalRState(state.newState))
         );
 
-        return connection;
+        return { connection };
     }
 }
 
