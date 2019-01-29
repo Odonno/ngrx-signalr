@@ -1,5 +1,5 @@
 import 'signalr';
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject, from, throwError } from 'rxjs';
 
 interface SignalRError extends Error {
     context?: any;
@@ -120,16 +120,16 @@ class SignalRHub {
         return subject.asObservable();
     }
 
-    send(method: string, ...args: any[]): Promise<any> {
+    send(method: string, ...args: any[]): Observable<any> {
         if (!this._connection) {
-            return Promise.reject('The connection has not been started yet. Please start the connection by invoking the start method before attempting to send a message to the server.');
+            return throwError('The connection has not been started yet. Please start the connection by invoking the start method before attempting to send a message to the server.');
         }
 
         if (!this._proxy) {
             this._proxy = this._connection.createHubProxy(this.hubName);
         }
 
-        return this._proxy.invoke(method, ...args);
+        return from(this._proxy.invoke(method, ...args));
     }
 
     hasSubscriptions(): boolean {

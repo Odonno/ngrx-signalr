@@ -100,12 +100,12 @@ var SignalRHub = /** @class */ (function () {
         }
         var _a;
         if (!this._connection) {
-            return Promise.reject('The connection has not been started yet. Please start the connection by invoking the start method before attempting to send a message to the server.');
+            return rxjs_1.throwError('The connection has not been started yet. Please start the connection by invoking the start method before attempting to send a message to the server.');
         }
         if (!this._proxy) {
             this._proxy = this._connection.createHubProxy(this.hubName);
         }
-        return (_a = this._proxy).invoke.apply(_a, [method].concat(args));
+        return rxjs_1.from((_a = this._proxy).invoke.apply(_a, [method].concat(args)));
     };
     SignalRHub.prototype.hasSubscriptions = function () {
         for (var key in this._subjects) {

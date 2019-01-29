@@ -26,7 +26,7 @@ declare class SignalRHub {
     constructor(hubName: string, url: string | undefined);
     start(): void;
     on<T>(event: string): Observable<T>;
-    send(method: string, ...args: any[]): Promise<any>;
+    send(method: string, ...args: any[]): Observable<any>;
     hasSubscriptions(): boolean;
 }
 declare const findHub: (hubName: string, url: string | undefined) => SignalRHub | undefined;
