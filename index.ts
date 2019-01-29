@@ -1,3 +1,4 @@
+import 'signalr';
 import { Observable, Subject } from 'rxjs';
 
 // TODO : create ngrx action for connection error
@@ -137,4 +138,4 @@ const createSignalRHub = (hubName: string, url?: string | undefined): SignalRHub
     return getHub(hubName, url) || addHub(hubName, url);
 }
 
-export { SignalRError, SignalRState, createSignalRHub };
+export { SignalRError, SignalRState, createSignalRHub }; 
