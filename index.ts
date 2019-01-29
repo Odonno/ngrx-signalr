@@ -37,6 +37,7 @@ const toSignalRState = (state: SignalR.ConnectionState): string => {
 class SignalRHub {
     private _connection: SignalR.Hub.Connection | undefined;
     private _proxy: SignalR.Hub.Proxy | undefined;
+    private _start$: Subject<any>;
     private _state$: Subject<string>;
     private _error$: Subject<SignalRError>;
     private _subjects: { [name: string]: Subject<any> };
@@ -58,6 +59,10 @@ class SignalRHub {
         return this._url;
     }
 
+    get start$(): Observable<void> {
+        return this._start$.asObservable();
+    }
+
     get state$(): Observable<string> {
         return this._state$.asObservable();
     }
@@ -68,6 +73,7 @@ class SignalRHub {
 
     constructor(private _hubName: string, private _url: string | undefined) {
         this._subjects = {};
+        this._start$ = new Subject<void>();
         this._state$ = new Subject<string>();
         this._error$ = new Subject<SignalRError>();
     }
@@ -76,8 +82,10 @@ class SignalRHub {
         if (!this.hasSubscriptions()) {
             console.warn('No listeners have been setup. You need to setup a listener before starting the connection or you will not receive data.');
         }
-        this._primePromise = this.connection.start();
-        return this._primePromise;
+
+        this.connection.start()
+            .done(_ => this._start$.next())
+            .fail((error) => this._start$.error(error))
     }
 
     on<T>(event: string): Observable<T> {

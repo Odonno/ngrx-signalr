@@ -66,6 +66,7 @@ var SignalRHub = /** @class */ (function () {
         this._hubName = _hubName;
         this._url = _url;
         this._subjects = {};
+        this._start$ = new rxjs_1.Subject();
         this._state$ = new rxjs_1.Subject();
         this._error$ = new rxjs_1.Subject();
     }
@@ -97,6 +98,13 @@ var SignalRHub = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(SignalRHub.prototype, "start$", {
+        get: function () {
+            return this._start$.asObservable();
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(SignalRHub.prototype, "state$", {
         get: function () {
             return this._state$.asObservable();
@@ -112,11 +120,13 @@ var SignalRHub = /** @class */ (function () {
         configurable: true
     });
     SignalRHub.prototype.start = function () {
+        var _this = this;
         if (!this.hasSubscriptions()) {
             console.warn('No listeners have been setup. You need to setup a listener before starting the connection or you will not receive data.');
         }
-        this._primePromise = this.connection.start();
-        return this._primePromise;
+        this.connection.start()
+            .done(function (_) { return _this._start$.next(); })
+            .fail(function (error) { return _this._start$.error(error); });
     };
     SignalRHub.prototype.on = function (event) {
         var subject = this.getOrCreateSubject(event);

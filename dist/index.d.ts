@@ -16,6 +16,7 @@ declare class SignalRHub {
     private _url;
     private _connection;
     private _proxy;
+    private _start$;
     private _state$;
     private _error$;
     private _subjects;
@@ -24,10 +25,11 @@ declare class SignalRHub {
     readonly proxy: SignalR.Hub.Proxy;
     readonly hubName: string;
     readonly url: string | undefined;
+    readonly start$: Observable<void>;
     readonly state$: Observable<string>;
     readonly error$: Observable<SignalRError>;
     constructor(_hubName: string, _url: string | undefined);
-    start(): JQueryPromise<any>;
+    start(): void;
     on<T>(event: string): Observable<T>;
     send(method: string, ...args: any[]): Promise<any>;
     hasSubscriptions(): boolean;
