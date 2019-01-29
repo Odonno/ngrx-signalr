@@ -26,6 +26,28 @@ var toSignalRState = function (state) {
             return reconnecting;
     }
 };
+var getOrCreateSubject = function (subjects, event) {
+    return subjects[event] || (subjects[event] = new rxjs_1.Subject());
+};
+var createConnection = function (url, errorSubject, stateSubject) {
+    if (!$) {
+        return { error: new Error('jQuery is not defined.') };
+    }
+    if (!$.hubConnection) {
+        return { error: new Error('The $.hubConnection function is not defined. Please check if you imported SignalR correctly.') };
+    }
+    var connection = $.hubConnection(url);
+    if (!connection) {
+        return { error: new Error("Impossible to create the hub '" + url + "'.") };
+    }
+    connection.error(function (error) {
+        return errorSubject.next(error);
+    });
+    connection.stateChanged(function (state) {
+        return stateSubject.next(toSignalRState(state.newState));
+    });
+    return { connection: connection };
+};
 var SignalRHub = /** @class */ (function () {
     function SignalRHub(hubName, url) {
         this.hubName = hubName;
@@ -41,7 +63,16 @@ var SignalRHub = /** @class */ (function () {
     SignalRHub.prototype.start = function () {
         var _this = this;
         if (!this._connection) {
-            this._connection = this.createConnection();
+            var _a = createConnection(this.url, this._errorSubject, this._stateSubject), connection = _a.connection, error = _a.error;
+            if (error) {
+                this._startSubject.error(error);
+                return;
+            }
+            this._connection = connection;
+        }
+        if (!this._connection) {
+            this._startSubject.error(new Error('Impossible to start the connection...'));
+            return;
         }
         if (!this.hasSubscriptions()) {
             console.warn('No listeners have been setup. You need to setup a listener before starting the connection or you will not receive data.');
@@ -52,13 +83,13 @@ var SignalRHub = /** @class */ (function () {
     };
     SignalRHub.prototype.on = function (event) {
         if (!this._connection) {
-            console.warn('Impossible to listen to event type ' + event + '.');
+            console.warn('The connection has not been started yet. Please start the connection by invoking the start method before attempting to listen to event type ' + event + '.');
             return new rxjs_1.Observable();
         }
         if (!this._proxy) {
             this._proxy = this._connection.createHubProxy(this.hubName);
         }
-        var subject = this.getOrCreateSubject(event);
+        var subject = getOrCreateSubject(this._subjects, event);
         this._proxy.on(event, function (data) { return subject.next(data); });
         return subject.asObservable();
     };
@@ -69,7 +100,7 @@ var SignalRHub = /** @class */ (function () {
         }
         var _a;
         if (!this._connection) {
-            return Promise.reject('The connection has not been started yet. Please start the connection by invoking the start method befor attempting to send a message to the server.');
+            return Promise.reject('The connection has not been started yet. Please start the connection by invoking the start method before attempting to send a message to the server.');
         }
         if (!this._proxy) {
             this._proxy = this._connection.createHubProxy(this.hubName);
@@ -83,28 +114,6 @@ var SignalRHub = /** @class */ (function () {
             }
         }
         return false;
-    };
-    // TODO : extract function
-    SignalRHub.prototype.getOrCreateSubject = function (event) {
-        return this._subjects[event] || (this._subjects[event] = new rxjs_1.Subject());
-    };
-    // TODO : extract function
-    SignalRHub.prototype.createConnection = function () {
-        var _this = this;
-        if (!$) {
-            return { error: new Error('jQuery is not defined.') };
-        }
-        if (!$.hubConnection) {
-            return { error: new Error('The $.hubConnection function is not defined. Please check if you imported SignalR correctly.') };
-        }
-        var connection = $.hubConnection(this.url);
-        connection.error(function (error) {
-            return _this._errorSubject.next(error);
-        });
-        connection.stateChanged(function (state) {
-            return _this._stateSubject.next(toSignalRState(state.newState));
-        });
-        return { connection: connection };
     };
     return SignalRHub;
 }());

@@ -34,21 +34,47 @@ const toSignalRState = (state: SignalR.ConnectionState): string => {
     }
 }
 
+const getOrCreateSubject = <T>(subjects: { [name: string]: Subject<any> }, event: string): Subject<T> => {
+    return subjects[event] || (subjects[event] = new Subject<T>());
+}
+
+const createConnection = (url: string | undefined, errorSubject: Subject<SignalRError>, stateSubject: Subject<string>): { connection?: SignalR.Hub.Connection, error?: Error } => {
+    if (!$) {
+        return { error: new Error('jQuery is not defined.') }
+    }
+    if (!$.hubConnection) {
+        return { error: new Error('The $.hubConnection function is not defined. Please check if you imported SignalR correctly.') }
+    }
+
+    const connection = $.hubConnection(url);
+
+    if (!connection) {
+        return { error: new Error("Impossible to create the hub '" + url + "'.") }
+    }
+
+    connection.error((error: SignalR.ConnectionError) =>
+        errorSubject.next(error)
+    );
+    connection.stateChanged((state: SignalR.StateChanged) =>
+        stateSubject.next(toSignalRState(state.newState))
+    );
+
+    return { connection };
+}
+
 class SignalRHub {
     private _connection: SignalR.Hub.Connection | undefined;
     private _proxy: SignalR.Hub.Proxy | undefined;
     private _startSubject = new Subject<void>();
     private _stateSubject = new Subject<string>();
     private _errorSubject = new Subject<SignalRError>();
-    private _subjects: { [name: string]: Subject<any> };
+    private _subjects: { [name: string]: Subject<any> } = {};
 
     start$: Observable<void>;
     state$: Observable<string>;
     error$: Observable<SignalRError>;
 
     constructor(public hubName: string, public url: string | undefined) {
-        this._subjects = {};
-
         this.start$ = this._startSubject.asObservable();
         this.state$ = this._stateSubject.asObservable();
         this.error$ = this._errorSubject.asObservable();
@@ -56,7 +82,7 @@ class SignalRHub {
 
     start() {
         if (!this._connection) {
-            const { connection, error } = this.createConnection();
+            const { connection, error } = createConnection(this.url, this._errorSubject, this._stateSubject);
             if (error) {
                 this._startSubject.error(error);
                 return;
@@ -89,7 +115,7 @@ class SignalRHub {
             this._proxy = this._connection.createHubProxy(this.hubName);
         }
 
-        const subject = this.getOrCreateSubject<T>(event);
+        const subject = getOrCreateSubject<T>(this._subjects, event);
         this._proxy.on(event, (data: T) => subject.next(data));
 
         return subject.asObservable();
@@ -115,36 +141,6 @@ class SignalRHub {
         }
 
         return false;
-    }
-
-    // TODO : extract function
-    private getOrCreateSubject<T>(event: string): Subject<T> {
-        return this._subjects[event] || (this._subjects[event] = new Subject<T>());
-    }
-
-    // TODO : extract function
-    private createConnection(): { connection?: SignalR.Hub.Connection, error?: Error } {
-        if (!$) {
-            return { error: new Error('jQuery is not defined.') }
-        }
-        if (!$.hubConnection) {
-            return { error: new Error('The $.hubConnection function is not defined. Please check if you imported SignalR correctly.') }
-        }
-
-        const connection = $.hubConnection(this.url);
-
-        if (!connection) {
-            return { error: new Error("Impossible to create the hub '" + this.url + "'.") }
-        }
-
-        connection.error((error: SignalR.ConnectionError) =>
-            this._errorSubject.next(error)
-        );
-        connection.stateChanged((state: SignalR.StateChanged) =>
-            this._stateSubject.next(toSignalRState(state.newState))
-        );
-
-        return { connection };
     }
 }
 

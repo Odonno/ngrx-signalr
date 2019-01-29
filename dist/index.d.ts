@@ -28,8 +28,6 @@ declare class SignalRHub {
     on<T>(event: string): Observable<T>;
     send(method: string, ...args: any[]): Promise<any>;
     hasSubscriptions(): boolean;
-    private getOrCreateSubject;
-    private createConnection;
 }
 declare const createSignalRHub: (hubName: string, url?: string | undefined) => SignalRHub;
 export { SignalRError, SignalRState, createSignalRHub };
