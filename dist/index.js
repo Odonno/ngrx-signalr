@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 require("signalr");
 var rxjs_1 = require("rxjs");
-// TODO : create ngrx actions for connection state
+// TODO : use ngrx actions instead
 var connecting = 'connecting';
 var connected = 'connected';
 var disconnected = 'disconnected';
@@ -52,9 +52,9 @@ var SignalRHub = /** @class */ (function () {
     function SignalRHub(hubName, url) {
         this.hubName = hubName;
         this.url = url;
-        this._startSubject = new rxjs_1.Subject();
-        this._stateSubject = new rxjs_1.Subject();
-        this._errorSubject = new rxjs_1.Subject();
+        this._startSubject = new rxjs_1.Subject(); // TODO : use ngrx actions instead
+        this._stateSubject = new rxjs_1.Subject(); // TODO : use ngrx actions instead
+        this._errorSubject = new rxjs_1.Subject(); // TODO : use ngrx actions instead
         this._subjects = {};
         this.start$ = this._startSubject.asObservable();
         this.state$ = this._stateSubject.asObservable();
@@ -118,15 +118,16 @@ var SignalRHub = /** @class */ (function () {
     return SignalRHub;
 }());
 var hubs = [];
-var getHub = function (hubName, url) {
+var findHub = function (hubName, url) {
     return hubs.filter(function (h) { return h.hubName === hubName && h.url === url; })[0];
 };
+exports.findHub = findHub;
 var addHub = function (hubName, url) {
     var hub = new SignalRHub(hubName, url);
     hubs.push(hub);
     return hub;
 };
 var createSignalRHub = function (hubName, url) {
-    return getHub(hubName, url) || addHub(hubName, url);
+    return findHub(hubName, url) || addHub(hubName, url);
 };
 exports.createSignalRHub = createSignalRHub;

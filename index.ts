@@ -1,14 +1,13 @@
 import 'signalr';
 import { Observable, Subject } from 'rxjs';
 
-// TODO : create ngrx action for connection error
 interface SignalRError extends Error {
     context?: any;
     transport?: string;
     source?: string;
 }
 
-// TODO : create ngrx actions for connection state
+// TODO : use ngrx actions instead
 const connecting = 'connecting';
 const connected = 'connected';
 const disconnected = 'disconnected';
@@ -65,9 +64,9 @@ const createConnection = (url: string | undefined, errorSubject: Subject<SignalR
 class SignalRHub {
     private _connection: SignalR.Hub.Connection | undefined;
     private _proxy: SignalR.Hub.Proxy | undefined;
-    private _startSubject = new Subject<void>();
-    private _stateSubject = new Subject<string>();
-    private _errorSubject = new Subject<SignalRError>();
+    private _startSubject = new Subject<void>(); // TODO : use ngrx actions instead
+    private _stateSubject = new Subject<string>(); // TODO : use ngrx actions instead
+    private _errorSubject = new Subject<SignalRError>(); // TODO : use ngrx actions instead
     private _subjects: { [name: string]: Subject<any> } = {};
 
     start$: Observable<void>;
@@ -146,7 +145,7 @@ class SignalRHub {
 
 const hubs: SignalRHub[] = [];
 
-const getHub = (hubName: string, url: string | undefined): SignalRHub | undefined => {
+const findHub = (hubName: string, url: string | undefined): SignalRHub | undefined => {
     return hubs.filter(h => h.hubName === hubName && h.url === url)[0];
 }
 
@@ -157,7 +156,7 @@ const addHub = (hubName: string, url: string | undefined): SignalRHub => {
 }
 
 const createSignalRHub = (hubName: string, url?: string | undefined): SignalRHub => {
-    return getHub(hubName, url) || addHub(hubName, url);
+    return findHub(hubName, url) || addHub(hubName, url);
 }
 
-export { SignalRError, SignalRState, createSignalRHub }; 
+export { SignalRError, SignalRState, createSignalRHub, findHub }; 

@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+require("signalr");
+exports.SIGNALR_CONNECTION_SUCCEED = '@ngrx/signalr/connectionSucceed';
+exports.SIGNALR_CONNECTION_FAILED = '@ngrx/signalr/connectionFailed';
+exports.SIGNALR_CONNECTING = '@ngrx/signalr/connecting';
+exports.SIGNALR_CONNECTED = '@ngrx/signalr/connected';
+exports.SIGNALR_DISCONNECTED = '@ngrx/signalr/disconnected';
+exports.SIGNALR_RECONNECTING = '@ngrx/signalr/reconnecting';
+exports.SIGNALR_ERROR = '@ngrx/signalr/error';
