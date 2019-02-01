@@ -18,6 +18,6 @@ export declare type SignalRHubState = typeof unstarted | typeof started | typeof
 export declare type SignalRHubStatus = {
     hubName: string;
     url: string | undefined;
-    state: SignalRHubState;
+    state: SignalRHubState | undefined;
 };
 export {};

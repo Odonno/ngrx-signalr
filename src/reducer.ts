@@ -1,12 +1,12 @@
-import { SignalRAction, SIGNALR_CREATE_HUB } from "./actions";
+import { SignalRAction, SIGNALR_CREATE_HUB, SIGNALR_HUB_UNSTARTED, SIGNALR_HUB_STARTED, SIGNALR_CONNECTING, SIGNALR_CONNECTED, SIGNALR_DISCONNECTED, SIGNALR_RECONNECTING } from "./actions";
 import { SignalRHubStatus, SignalRHubState } from "./hubStatus";
 
 const initialState = {
-    hubStatus: []
+    hubStatuses: []
 };
 
 export interface BaseSignalRStoreState {
-    hubStatus: SignalRHubStatus[];
+    hubStatuses: SignalRHubStatus[];
 }
 
 export const signalrReducer = (
@@ -16,14 +16,92 @@ export const signalrReducer = (
     switch (action.type) {
         case SIGNALR_CREATE_HUB:
             const newHubStatus = {
-                hubName: action.hubName, 
+                hubName: action.hubName,
                 url: action.url,
-                state: 'unstarted' as SignalRHubState
+                state: undefined
             };
 
             return {
                 ...state,
-                hubStatus: state.hubStatus.concat([newHubStatus])
+                hubStatuses: state.hubStatuses.concat([newHubStatus])
+            };
+        case SIGNALR_HUB_UNSTARTED:
+            return {
+                ...state,
+                hubStatuses: state.hubStatuses.map(hs => {
+                    if (hs.hubName === action.hubName && hs.url === action.url) {
+                        return {
+                            ...hs,
+                            state: 'unstarted' as SignalRHubState
+                        };
+                    }
+                    return hs;
+                })
+            };
+        case SIGNALR_HUB_STARTED:
+            return {
+                ...state,
+                hubStatuses: state.hubStatuses.map(hs => {
+                    if (hs.hubName === action.hubName && hs.url === action.url) {
+                        return {
+                            ...hs,
+                            state: 'started' as SignalRHubState
+                        };
+                    }
+                    return hs;
+                })
+            };
+        case SIGNALR_CONNECTING:
+            return {
+                ...state,
+                hubStatuses: state.hubStatuses.map(hs => {
+                    if (hs.hubName === action.hubName && hs.url === action.url) {
+                        return {
+                            ...hs,
+                            state: 'connecting' as SignalRHubState
+                        };
+                    }
+                    return hs;
+                })
+            };
+        case SIGNALR_CONNECTED:
+            return {
+                ...state,
+                hubStatuses: state.hubStatuses.map(hs => {
+                    if (hs.hubName === action.hubName && hs.url === action.url) {
+                        return {
+                            ...hs,
+                            state: 'connected' as SignalRHubState
+                        };
+                    }
+                    return hs;
+                })
+            };
+        case SIGNALR_DISCONNECTED:
+            return {
+                ...state,
+                hubStatuses: state.hubStatuses.map(hs => {
+                    if (hs.hubName === action.hubName && hs.url === action.url) {
+                        return {
+                            ...hs,
+                            state: 'disconnected' as SignalRHubState
+                        };
+                    }
+                    return hs;
+                })
+            };
+        case SIGNALR_RECONNECTING:
+            return {
+                ...state,
+                hubStatuses: state.hubStatuses.map(hs => {
+                    if (hs.hubName === action.hubName && hs.url === action.url) {
+                        return {
+                            ...hs,
+                            state: 'reconnecting' as SignalRHubState
+                        };
+                    }
+                    return hs;
+                })
             };
         default:
             return state;

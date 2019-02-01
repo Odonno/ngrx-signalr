@@ -13,7 +13,7 @@ var __assign = (this && this.__assign) || function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var actions_1 = require("./actions");
 var initialState = {
-    hubStatus: []
+    hubStatuses: []
 };
 exports.signalrReducer = function (state, action) {
     if (state === void 0) { state = initialState; }
@@ -22,9 +22,51 @@ exports.signalrReducer = function (state, action) {
             var newHubStatus = {
                 hubName: action.hubName,
                 url: action.url,
-                state: 'unstarted'
+                state: undefined
             };
-            return __assign({}, state, { hubStatus: state.hubStatus.concat([newHubStatus]) });
+            return __assign({}, state, { hubStatuses: state.hubStatuses.concat([newHubStatus]) });
+        case actions_1.SIGNALR_HUB_UNSTARTED:
+            return __assign({}, state, { hubStatuses: state.hubStatuses.map(function (hs) {
+                    if (hs.hubName === action.hubName && hs.url === action.url) {
+                        return __assign({}, hs, { state: 'unstarted' });
+                    }
+                    return hs;
+                }) });
+        case actions_1.SIGNALR_HUB_STARTED:
+            return __assign({}, state, { hubStatuses: state.hubStatuses.map(function (hs) {
+                    if (hs.hubName === action.hubName && hs.url === action.url) {
+                        return __assign({}, hs, { state: 'started' });
+                    }
+                    return hs;
+                }) });
+        case actions_1.SIGNALR_CONNECTING:
+            return __assign({}, state, { hubStatuses: state.hubStatuses.map(function (hs) {
+                    if (hs.hubName === action.hubName && hs.url === action.url) {
+                        return __assign({}, hs, { state: 'connecting' });
+                    }
+                    return hs;
+                }) });
+        case actions_1.SIGNALR_CONNECTED:
+            return __assign({}, state, { hubStatuses: state.hubStatuses.map(function (hs) {
+                    if (hs.hubName === action.hubName && hs.url === action.url) {
+                        return __assign({}, hs, { state: 'connected' });
+                    }
+                    return hs;
+                }) });
+        case actions_1.SIGNALR_DISCONNECTED:
+            return __assign({}, state, { hubStatuses: state.hubStatuses.map(function (hs) {
+                    if (hs.hubName === action.hubName && hs.url === action.url) {
+                        return __assign({}, hs, { state: 'disconnected' });
+                    }
+                    return hs;
+                }) });
+        case actions_1.SIGNALR_RECONNECTING:
+            return __assign({}, state, { hubStatuses: state.hubStatuses.map(function (hs) {
+                    if (hs.hubName === action.hubName && hs.url === action.url) {
+                        return __assign({}, hs, { state: 'reconnecting' });
+                    }
+                    return hs;
+                }) });
         default:
             return state;
     }
