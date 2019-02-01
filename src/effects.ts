@@ -1,40 +1,35 @@
-import { Injectable, Inject } from "@angular/core";
-import { Store } from "@ngrx/store";
+import { Injectable } from "@angular/core";
 import { Actions, Effect, ofType } from "@ngrx/effects";
-import { of, merge } from "rxjs";
-import { pairwise, map, filter, mergeMap, catchError, withLatestFrom } from 'rxjs/operators';
+import { of, merge, empty } from "rxjs";
+import { map, mergeMap, catchError } from 'rxjs/operators';
 
-import { StoreSignalRConfig, StateKeyOrSelector, SIGNALR_CONFIG } from "./module";
-import { BaseSignalRStoreState } from "./reducer";
-import { SIGNALR_HUB_UNSTARTED, SignalRHubUnstartedAction, SIGNALR_HUB_STARTED, SIGNALR_HUB_FAILED_TO_START, SIGNALR_ERROR, SIGNALR_CONNECTING, SIGNALR_CONNECTED, SIGNALR_DISCONNECTED, SIGNALR_RECONNECTING } from "./actions";
+import { SIGNALR_HUB_UNSTARTED, SignalRHubUnstartedAction, SIGNALR_HUB_STARTED, SIGNALR_HUB_FAILED_TO_START, SIGNALR_ERROR, SIGNALR_CONNECTING, SIGNALR_CONNECTED, SIGNALR_DISCONNECTED, SIGNALR_RECONNECTING, SIGNALR_CREATE_HUB, SignalRCreateHubAction } from "./actions";
+import { findHub, createHub } from "./hub";
 
 @Injectable()
 export class SignalREffects {
-    private stateKey: StateKeyOrSelector;
-
-    // handle hub creation (hub unstarted by default)
+    // handle hub creation (then hub unstarted by default)
     @Effect()
-    hubUnstartedWhenCreated$ = this.store.select<BaseSignalRStoreState>(<string>this.stateKey).pipe(
-        pairwise(),
-        filter(([previousState, newState]) => previousState !== newState),
-        map(([previousState, newState]) => {
-            return newState.hubs
-                .filter(hub => !previousState.hubs.some(h => h.hubName === hub.hubName && h.url === hub.url))
-            [0];
-        }),
-        filter(hub => !!hub),
-        map(hub => ({ type: SIGNALR_HUB_UNSTARTED, hubName: hub.hubName, url: hub.url }))
+    createHub$ = this.actions$.pipe(
+        ofType<SignalRCreateHubAction>(SIGNALR_CREATE_HUB),
+        mergeMap(action => {
+            const hub = createHub(action.hubName, action.url);
+            return of({ type: SIGNALR_HUB_UNSTARTED, hubName: hub.hubName, url: hub.url });
+        })
     );
 
-    // handle start result (success/fail)
-    // handle change connection state (connecting, connected, disconnected, reconnecting)
-    // handle hub error
+    // listen to start result (success/fail)
+    // listen to change connection state (connecting, connected, disconnected, reconnecting)
+    // listen to hub error
     @Effect()
     startHub$ = this.actions$.pipe(
         ofType<SignalRHubUnstartedAction>(SIGNALR_HUB_UNSTARTED),
-        withLatestFrom(this.store.select<BaseSignalRStoreState>(<string>this.stateKey).pipe(map(state => state.hubs))),
-        mergeMap(([action, hubs]) => {
-            const hub = hubs.filter(h => h.hubName === action.hubName && h.url === action.url)[0];
+        mergeMap(action => {
+            const hub = findHub(action.hubName, action.url);
+
+            if (!hub) {
+                return empty();
+            }
 
             const start$ = hub.start$.pipe(
                 map(_ => ({ type: SIGNALR_HUB_STARTED, hubName: action.hubName, url: action.url })),
@@ -67,10 +62,6 @@ export class SignalREffects {
     );
 
     constructor(
-        private actions$: Actions,
-        private store: Store<any>,
-        @Inject(SIGNALR_CONFIG) private config: StoreSignalRConfig
-    ) {
-        this.stateKey = this.config.stateKey as StateKeyOrSelector;
-    }
+        private actions$: Actions
+    ) { }
 }

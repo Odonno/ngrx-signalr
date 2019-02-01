@@ -1,12 +1,12 @@
-import { SignalRHub } from "./hub";
 import { SignalRAction, SIGNALR_CREATE_HUB } from "./actions";
+import { SignalRHubStatus, SignalRHubState } from "./hubStatus";
 
 const initialState = {
-    hubs: []
+    hubStatus: []
 };
 
 export interface BaseSignalRStoreState {
-    hubs: SignalRHub[];
+    hubStatus: SignalRHubStatus[];
 }
 
 export const signalrReducer = (
@@ -15,9 +15,15 @@ export const signalrReducer = (
 ): BaseSignalRStoreState => {
     switch (action.type) {
         case SIGNALR_CREATE_HUB:
+            const newHubStatus = {
+                hubName: action.hubName, 
+                url: action.url,
+                state: 'unstarted' as SignalRHubState
+            };
+
             return {
                 ...state,
-                hubs: state.hubs.concat([new SignalRHub(action.hubName, action.url)])
+                hubStatus: state.hubStatus.concat([newHubStatus])
             };
         default:
             return state;

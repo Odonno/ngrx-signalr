@@ -40,9 +40,9 @@ const createConnection = (url: string | undefined, errorSubject: Subject<SignalR
 export class SignalRHub {
     private _connection: SignalR.Hub.Connection | undefined;
     private _proxy: SignalR.Hub.Proxy | undefined;
-    private _startSubject = new Subject<void>(); // TODO : use ngrx actions instead
-    private _stateSubject = new Subject<string>(); // TODO : use ngrx actions instead
-    private _errorSubject = new Subject<SignalRError>(); // TODO : use ngrx actions instead
+    private _startSubject = new Subject<void>();
+    private _stateSubject = new Subject<string>();
+    private _errorSubject = new Subject<SignalRError>();
     private _subjects: { [name: string]: Subject<any> } = {};
 
     start$: Observable<void>;
@@ -123,21 +123,14 @@ export class SignalRHub {
     }
 }
 
-// TODO : use the hubs in the ngrx store
 const hubs: SignalRHub[] = [];
 
-// TODO : use a ngrx selector instead
 export const findHub = (hubName: string, url: string | undefined): SignalRHub | undefined => {
     return hubs.filter(h => h.hubName === hubName && h.url === url)[0];
 }
 
-const addHub = (hubName: string, url: string | undefined): SignalRHub => {
+export const createHub = (hubName: string, url: string | undefined): SignalRHub => {
     const hub = new SignalRHub(hubName, url);
     hubs.push(hub);
     return hub;
-}
-
-// TODO : dispatch an action
-export const createSignalRHub = (hubName: string, url?: string | undefined): SignalRHub => {
-    return findHub(hubName, url) || addHub(hubName, url);
 }

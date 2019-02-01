@@ -11,16 +11,20 @@ var __assign = (this && this.__assign) || function () {
     return __assign.apply(this, arguments);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var hub_1 = require("./hub");
 var actions_1 = require("./actions");
 var initialState = {
-    hubs: []
+    hubStatus: []
 };
 exports.signalrReducer = function (state, action) {
     if (state === void 0) { state = initialState; }
     switch (action.type) {
         case actions_1.SIGNALR_CREATE_HUB:
-            return __assign({}, state, { hubs: state.hubs.concat([new hub_1.SignalRHub(action.hubName, action.url)]) });
+            var newHubStatus = {
+                hubName: action.hubName,
+                url: action.url,
+                state: 'unstarted'
+            };
+            return __assign({}, state, { hubStatus: state.hubStatus.concat([newHubStatus]) });
         default:
             return state;
     }

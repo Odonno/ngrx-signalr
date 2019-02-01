@@ -1,12 +1,7 @@
-import { Store } from "@ngrx/store";
 import { Actions } from "@ngrx/effects";
-import { StoreSignalRConfig } from "./module";
 export declare class SignalREffects {
     private actions$;
-    private store;
-    private config;
-    private stateKey;
-    hubUnstartedWhenCreated$: import("rxjs").Observable<{
+    createHub$: import("rxjs").Observable<{
         type: string;
         hubName: string;
         url: string | undefined;
@@ -30,5 +25,5 @@ export declare class SignalREffects {
         url: string | undefined;
         error: import("./hub").SignalRError;
     } | undefined>;
-    constructor(actions$: Actions, store: Store<any>, config: StoreSignalRConfig);
+    constructor(actions$: Actions);
 }

@@ -1,6 +1,6 @@
-import { SignalRHub } from "./hub";
 import { SignalRAction } from "./actions";
+import { SignalRHubStatus } from "./hubStatus";
 export interface BaseSignalRStoreState {
-    hubs: SignalRHub[];
+    hubStatus: SignalRHubStatus[];
 }
 export declare const signalrReducer: (state: BaseSignalRStoreState | undefined, action: SignalRAction) => BaseSignalRStoreState;

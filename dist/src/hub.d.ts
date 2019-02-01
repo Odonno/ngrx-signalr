@@ -24,4 +24,4 @@ export declare class SignalRHub {
     hasSubscriptions(): boolean;
 }
 export declare const findHub: (hubName: string, url: string | undefined) => SignalRHub | undefined;
-export declare const createSignalRHub: (hubName: string, url?: string | undefined) => SignalRHub;
+export declare const createHub: (hubName: string, url: string | undefined) => SignalRHub;

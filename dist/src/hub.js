@@ -29,9 +29,9 @@ var SignalRHub = /** @class */ (function () {
     function SignalRHub(hubName, url) {
         this.hubName = hubName;
         this.url = url;
-        this._startSubject = new rxjs_1.Subject(); // TODO : use ngrx actions instead
-        this._stateSubject = new rxjs_1.Subject(); // TODO : use ngrx actions instead
-        this._errorSubject = new rxjs_1.Subject(); // TODO : use ngrx actions instead
+        this._startSubject = new rxjs_1.Subject();
+        this._stateSubject = new rxjs_1.Subject();
+        this._errorSubject = new rxjs_1.Subject();
         this._subjects = {};
         this.start$ = this._startSubject.asObservable();
         this.state$ = this._stateSubject.asObservable();
@@ -97,18 +97,12 @@ var SignalRHub = /** @class */ (function () {
     return SignalRHub;
 }());
 exports.SignalRHub = SignalRHub;
-// TODO : use the hubs in the ngrx store
 var hubs = [];
-// TODO : use a ngrx selector instead
 exports.findHub = function (hubName, url) {
     return hubs.filter(function (h) { return h.hubName === hubName && h.url === url; })[0];
 };
-var addHub = function (hubName, url) {
+exports.createHub = function (hubName, url) {
     var hub = new SignalRHub(hubName, url);
     hubs.push(hub);
     return hub;
-};
-// TODO : dispatch an action
-exports.createSignalRHub = function (hubName, url) {
-    return exports.findHub(hubName, url) || addHub(hubName, url);
 };
