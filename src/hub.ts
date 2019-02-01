@@ -125,11 +125,16 @@ export class SignalRHub {
 
 const hubs: SignalRHub[] = [];
 
-export const findHub = (hubName: string, url: string | undefined): SignalRHub | undefined => {
-    return hubs.filter(h => h.hubName === hubName && h.url === url)[0];
-}
+export function findHub(hubName: string, url?: string | undefined): SignalRHub | undefined;
+export function findHub({ hubName, url }: { hubName: string, url?: string | undefined }): SignalRHub | undefined;
+export function findHub(x: string | { hubName: string, url?: string | undefined }, url?: string | undefined): SignalRHub | undefined {
+    if (typeof x === 'string') {
+        return hubs.filter(h => h.hubName === x && h.url === url)[0];
+    }
+    return hubs.filter(h => h.hubName === x.hubName && h.url === x.url)[0];
+};
 
-export const createHub = (hubName: string, url: string | undefined): SignalRHub => {
+export const createHub = (hubName: string, url?: string | undefined): SignalRHub => {
     const hub = new SignalRHub(hubName, url);
     hubs.push(hub);
     return hub;

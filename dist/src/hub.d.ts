@@ -23,5 +23,9 @@ export declare class SignalRHub {
     send(method: string, ...args: any[]): Observable<any>;
     hasSubscriptions(): boolean;
 }
-export declare const findHub: (hubName: string, url: string | undefined) => SignalRHub | undefined;
-export declare const createHub: (hubName: string, url: string | undefined) => SignalRHub;
+export declare function findHub(hubName: string, url?: string | undefined): SignalRHub | undefined;
+export declare function findHub({ hubName, url }: {
+    hubName: string;
+    url?: string | undefined;
+}): SignalRHub | undefined;
+export declare const createHub: (hubName: string, url?: string | undefined) => SignalRHub;

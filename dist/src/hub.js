@@ -98,9 +98,14 @@ var SignalRHub = /** @class */ (function () {
 }());
 exports.SignalRHub = SignalRHub;
 var hubs = [];
-exports.findHub = function (hubName, url) {
-    return hubs.filter(function (h) { return h.hubName === hubName && h.url === url; })[0];
-};
+function findHub(x, url) {
+    if (typeof x === 'string') {
+        return hubs.filter(function (h) { return h.hubName === x && h.url === url; })[0];
+    }
+    return hubs.filter(function (h) { return h.hubName === x.hubName && h.url === x.url; })[0];
+}
+exports.findHub = findHub;
+;
 exports.createHub = function (hubName, url) {
     var hub = new SignalRHub(hubName, url);
     hubs.push(hub);
