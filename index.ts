@@ -1,4 +1,4 @@
-export { 
+export {
     SIGNALR_CONNECTED,
     SIGNALR_CONNECTING,
     SIGNALR_CREATE_HUB,
@@ -21,7 +21,7 @@ export {
     SignalRReconnectingAction,
     SignalRStartHubAction,
     createSignalRHub,
-    startSignalRHub 
+    startSignalRHub
 } from './src/actions';
 export { SignalREffects } from './src/effects';
 export { SignalRError, SignalRHub, createHub, findHub } from "./src/hub";
@@ -33,6 +33,9 @@ export {
     SIGNALR_CONFIG
 } from './src/module';
 export { BaseSignalRStoreState, signalrReducer } from './src/reducer';
-
-
-// TODO : provide a way to get the current state of a SignalRHub (findHub selector?)
+export {
+    selectSignalrState,
+    selectHubsStatuses,
+    selectHubStatus,
+    selectAreAllHubsConnected
+} from './src/selectors';

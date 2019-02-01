@@ -26,4 +26,8 @@ exports.StoreSignalRConnectionModule = module_1.StoreSignalRConnectionModule;
 exports.SIGNALR_CONFIG = module_1.SIGNALR_CONFIG;
 var reducer_1 = require("./src/reducer");
 exports.signalrReducer = reducer_1.signalrReducer;
-// TODO : provide a way to get the current state of a SignalRHub (findHub selector?)
+var selectors_1 = require("./src/selectors");
+exports.selectSignalrState = selectors_1.selectSignalrState;
+exports.selectHubsStatuses = selectors_1.selectHubsStatuses;
+exports.selectHubStatus = selectors_1.selectHubStatus;
+exports.selectAreAllHubsConnected = selectors_1.selectAreAllHubsConnected;
