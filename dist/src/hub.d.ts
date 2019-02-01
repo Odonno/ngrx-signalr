@@ -5,12 +5,6 @@ export interface SignalRError extends Error {
     transport?: string;
     source?: string;
 }
-export declare const SignalRState: {
-    connecting: string;
-    connected: string;
-    disconnected: string;
-    reconnecting: string;
-};
 export declare class SignalRHub {
     hubName: string;
     url: string | undefined;

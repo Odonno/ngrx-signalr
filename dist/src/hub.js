@@ -2,29 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 require("signalr");
 var rxjs_1 = require("rxjs");
-// TODO : use ngrx actions instead
-var connecting = 'connecting';
-var connected = 'connected';
-var disconnected = 'disconnected';
-var reconnecting = 'reconnecting';
-exports.SignalRState = {
-    connecting: connecting,
-    connected: connected,
-    disconnected: disconnected,
-    reconnecting: reconnecting
-};
-var toSignalRState = function (state) {
-    switch (state) {
-        case 0 /* Connecting */:
-            return connecting;
-        case 1 /* Connected */:
-            return connected;
-        case 4 /* Disconnected */:
-            return disconnected;
-        case 2 /* Reconnecting */:
-            return reconnecting;
-    }
-};
+var hubStatus_1 = require("./hubStatus");
 var getOrCreateSubject = function (subjects, event) {
     return subjects[event] || (subjects[event] = new rxjs_1.Subject());
 };
@@ -43,11 +21,10 @@ var createConnection = function (url, errorSubject, stateSubject) {
         return errorSubject.next(error);
     });
     connection.stateChanged(function (state) {
-        return stateSubject.next(toSignalRState(state.newState));
+        return stateSubject.next(hubStatus_1.toSignalRState(state.newState));
     });
     return { connection: connection };
 };
-// TODO : should create an immutable object (with only props: hubName, url and state) = SignalRHubStatus
 var SignalRHub = /** @class */ (function () {
     function SignalRHub(hubName, url) {
         this.hubName = hubName;

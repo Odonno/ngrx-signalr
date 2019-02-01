@@ -1,36 +1,12 @@
 import 'signalr';
 import { Observable, Subject, from, throwError } from 'rxjs';
 
+import { toSignalRState } from './hubStatus';
+
 export interface SignalRError extends Error {
     context?: any;
     transport?: string;
     source?: string;
-}
-
-// TODO : use ngrx actions instead
-const connecting = 'connecting';
-const connected = 'connected';
-const disconnected = 'disconnected';
-const reconnecting = 'reconnecting';
-
-export const SignalRState = {
-    connecting,
-    connected,
-    disconnected,
-    reconnecting
-}
-
-const toSignalRState = (state: SignalR.ConnectionState): string => {
-    switch (state) {
-        case SignalR.ConnectionState.Connecting:
-            return connecting;
-        case SignalR.ConnectionState.Connected:
-            return connected;
-        case SignalR.ConnectionState.Disconnected:
-            return disconnected;
-        case SignalR.ConnectionState.Reconnecting:
-            return reconnecting;
-    }
 }
 
 const getOrCreateSubject = <T>(subjects: { [name: string]: Subject<any> }, event: string): Subject<T> => {
@@ -61,7 +37,6 @@ const createConnection = (url: string | undefined, errorSubject: Subject<SignalR
     return { connection };
 }
 
-// TODO : should create an immutable object (with only props: hubName, url and state) = SignalRHubStatus
 export class SignalRHub {
     private _connection: SignalR.Hub.Connection | undefined;
     private _proxy: SignalR.Hub.Proxy | undefined;
