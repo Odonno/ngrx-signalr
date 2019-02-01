@@ -24,7 +24,7 @@ export declare class SignalRHub {
     state$: Observable<string>;
     error$: Observable<SignalRError>;
     constructor(hubName: string, url: string | undefined);
-    start(): void;
+    start(): Observable<void>;
     on<T>(event: string): Observable<T>;
     send(method: string, ...args: any[]): Observable<any>;
     hasSubscriptions(): boolean;

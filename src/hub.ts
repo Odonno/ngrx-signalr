@@ -80,21 +80,22 @@ export class SignalRHub {
         this.error$ = this._errorSubject.asObservable();
     }
 
-    // TODO : return an observable
-    start() {
+    start(): Observable<void> {
         if (!this._connection) {
             const { connection, error } = createConnection(this.url, this._errorSubject, this._stateSubject);
             if (error) {
                 this._startSubject.error(error);
-                return;
+                return throwError(error);
             }
 
             this._connection = connection;
         }
 
         if (!this._connection) {
-            this._startSubject.error(new Error('Impossible to start the connection...'));
-            return;
+            const error = new Error('Impossible to start the connection...');
+
+            this._startSubject.error(error);
+            return throwError(error);
         }
 
         if (!this.hasSubscriptions()) {
@@ -104,6 +105,8 @@ export class SignalRHub {
         this._connection.start()
             .done(_ => this._startSubject.next())
             .fail((error) => this._startSubject.error(error));
+
+        return this._startSubject.asObservable();
     }
 
     on<T>(event: string): Observable<T> {

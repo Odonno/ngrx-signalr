@@ -60,20 +60,20 @@ var SignalRHub = /** @class */ (function () {
         this.state$ = this._stateSubject.asObservable();
         this.error$ = this._errorSubject.asObservable();
     }
-    // TODO : return an observable
     SignalRHub.prototype.start = function () {
         var _this = this;
         if (!this._connection) {
             var _a = createConnection(this.url, this._errorSubject, this._stateSubject), connection = _a.connection, error = _a.error;
             if (error) {
                 this._startSubject.error(error);
-                return;
+                return rxjs_1.throwError(error);
             }
             this._connection = connection;
         }
         if (!this._connection) {
-            this._startSubject.error(new Error('Impossible to start the connection...'));
-            return;
+            var error = new Error('Impossible to start the connection...');
+            this._startSubject.error(error);
+            return rxjs_1.throwError(error);
         }
         if (!this.hasSubscriptions()) {
             console.warn('No listeners have been setup. You need to setup a listener before starting the connection or you will not receive data.');
@@ -81,6 +81,7 @@ var SignalRHub = /** @class */ (function () {
         this._connection.start()
             .done(function (_) { return _this._startSubject.next(); })
             .fail(function (error) { return _this._startSubject.error(error); });
+        return this._startSubject.asObservable();
     };
     SignalRHub.prototype.on = function (event) {
         if (!this._connection) {
