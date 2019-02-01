@@ -6,3 +6,4 @@ exports.createSignalRHub = hub_1.createSignalRHub;
 exports.findHub = hub_1.findHub;
 var reducer_1 = require("./src/reducer");
 exports.signalrReducer = reducer_1.signalrReducer;
+// TODO : provide a way to get the current state of a SignalRHub (selector?)

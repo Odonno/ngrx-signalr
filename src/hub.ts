@@ -61,6 +61,7 @@ const createConnection = (url: string | undefined, errorSubject: Subject<SignalR
     return { connection };
 }
 
+// TODO : should create an immutable object (with only props: hubName, url and state) = SignalRHubStatus
 export class SignalRHub {
     private _connection: SignalR.Hub.Connection | undefined;
     private _proxy: SignalR.Hub.Proxy | undefined;
@@ -79,6 +80,7 @@ export class SignalRHub {
         this.error$ = this._errorSubject.asObservable();
     }
 
+    // TODO : return an observable
     start() {
         if (!this._connection) {
             const { connection, error } = createConnection(this.url, this._errorSubject, this._stateSubject);

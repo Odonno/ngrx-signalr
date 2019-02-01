@@ -1,2 +1,2 @@
 export { SignalRError, SignalRState, createSignalRHub, findHub } from "./src/hub";
-export { BaseSignalRStoreState, SignalRReducerState, signalrReducer } from './src/reducer';
+export { BaseSignalRStoreState, signalrReducer } from './src/reducer';

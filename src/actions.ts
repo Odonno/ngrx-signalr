@@ -1,15 +1,40 @@
 import 'signalr';
 
-export const SIGNALR_CONNECTION_SUCCEED = '@ngrx/signalr/connectionSucceed';
-export type SignalRConnectionSucceedAction = {
-    type: typeof SIGNALR_CONNECTION_SUCCEED;
+export const SIGNALR_CREATE_HUB = '@ngrx/signalr/createHub';
+export type SignalRCreateHubAction = {
+    type: typeof SIGNALR_CREATE_HUB;
+    hubName: string;
+    url: string | undefined;
+};
+export const createSignalRHub = (hubName: string, url: string | undefined) => 
+    ({ type: SIGNALR_CREATE_HUB, hubName, url });
+
+export const SIGNALR_HUB_UNSTARTED = '@ngrx/signalr/hubUnstarted';
+export type SignalRHubUnstartedAction = {
+    type: typeof SIGNALR_HUB_UNSTARTED;
     hubName: string;
     url: string | undefined;
 };
 
-export const SIGNALR_CONNECTION_FAILED = '@ngrx/signalr/connectionFailed';
-export type SignalRConnectionFailedAction = {
-    type: typeof SIGNALR_CONNECTION_FAILED;
+export const SIGNALR_START_HUB = '@ngrx/signalr/startHub';
+export type SignalRStartHubAction = {
+    type: typeof SIGNALR_START_HUB;
+    hubName: string;
+    url: string | undefined;
+};
+export const startSignalRHub = (hubName: string, url: string | undefined) => 
+    ({ type: SIGNALR_START_HUB, hubName, url });
+
+export const SIGNALR_HUB_STARTED = '@ngrx/signalr/hubStarted';
+export type SignalRHubStartedAction = {
+    type: typeof SIGNALR_HUB_STARTED;
+    hubName: string;
+    url: string | undefined;
+};
+
+export const SIGNALR_HUB_FAILED_TO_START = '@ngrx/signalr/hubFailedToStart';
+export type SignalRHubFailedToStartAction = {
+    type: typeof SIGNALR_HUB_FAILED_TO_START;
     hubName: string;
     url: string | undefined;
     error: any;
@@ -52,8 +77,11 @@ export type SignalRErrorAction = {
 };
 
 export type SignalRAction =
-    | SignalRConnectionSucceedAction
-    | SignalRConnectionFailedAction
+    | SignalRCreateHubAction
+    | SignalRStartHubAction
+    | SignalRHubUnstartedAction 
+    | SignalRHubStartedAction
+    | SignalRHubFailedToStartAction
     | SignalRConnectingAction
     | SignalRConnectedAction
     | SignalRDisconnectedAction

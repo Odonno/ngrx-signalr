@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@angular/core": "^7.2.2",
+    "@ngrx/effects": "^7.2.0",
     "@ngrx/store": "^7.2.0",
     "@types/signalr": "^2.2.35",
     "jquery": "^3.3.1",

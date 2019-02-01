@@ -47,6 +47,7 @@ var createConnection = function (url, errorSubject, stateSubject) {
     });
     return { connection: connection };
 };
+// TODO : should create an immutable object (with only props: hubName, url and state) = SignalRHubStatus
 var SignalRHub = /** @class */ (function () {
     function SignalRHub(hubName, url) {
         this.hubName = hubName;
@@ -59,6 +60,7 @@ var SignalRHub = /** @class */ (function () {
         this.state$ = this._stateSubject.asObservable();
         this.error$ = this._errorSubject.asObservable();
     }
+    // TODO : return an observable
     SignalRHub.prototype.start = function () {
         var _this = this;
         if (!this._connection) {
