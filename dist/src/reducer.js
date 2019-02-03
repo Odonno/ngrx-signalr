@@ -1,62 +1,48 @@
-"use strict";
-var __assign = (this && this.__assign) || function () {
-    __assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
-    return __assign.apply(this, arguments);
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-var actions_1 = require("./actions");
-var initialState = {
+import { SIGNALR_CREATE_HUB, SIGNALR_HUB_UNSTARTED, SIGNALR_CONNECTING, SIGNALR_CONNECTED, SIGNALR_DISCONNECTED, SIGNALR_RECONNECTING } from "./actions";
+const initialState = {
     hubStatuses: []
 };
-exports.signalrReducer = function (state, action) {
-    if (state === void 0) { state = initialState; }
+export const signalrReducer = (state = initialState, action) => {
     switch (action.type) {
-        case actions_1.SIGNALR_CREATE_HUB:
-            var newHubStatus = {
+        case SIGNALR_CREATE_HUB:
+            const newHubStatus = {
                 hubName: action.hubName,
                 url: action.url,
                 state: undefined
             };
-            return __assign({}, state, { hubStatuses: state.hubStatuses.concat([newHubStatus]) });
-        case actions_1.SIGNALR_HUB_UNSTARTED:
-            return __assign({}, state, { hubStatuses: state.hubStatuses.map(function (hs) {
+            return Object.assign({}, state, { hubStatuses: state.hubStatuses.concat([newHubStatus]) });
+        case SIGNALR_HUB_UNSTARTED:
+            return Object.assign({}, state, { hubStatuses: state.hubStatuses.map(hs => {
                     if (hs.hubName === action.hubName && hs.url === action.url) {
-                        return __assign({}, hs, { state: 'unstarted' });
+                        return Object.assign({}, hs, { state: 'unstarted' });
                     }
                     return hs;
                 }) });
-        case actions_1.SIGNALR_CONNECTING:
-            return __assign({}, state, { hubStatuses: state.hubStatuses.map(function (hs) {
+        case SIGNALR_CONNECTING:
+            return Object.assign({}, state, { hubStatuses: state.hubStatuses.map(hs => {
                     if (hs.hubName === action.hubName && hs.url === action.url) {
-                        return __assign({}, hs, { state: 'connecting' });
+                        return Object.assign({}, hs, { state: 'connecting' });
                     }
                     return hs;
                 }) });
-        case actions_1.SIGNALR_CONNECTED:
-            return __assign({}, state, { hubStatuses: state.hubStatuses.map(function (hs) {
+        case SIGNALR_CONNECTED:
+            return Object.assign({}, state, { hubStatuses: state.hubStatuses.map(hs => {
                     if (hs.hubName === action.hubName && hs.url === action.url) {
-                        return __assign({}, hs, { state: 'connected' });
+                        return Object.assign({}, hs, { state: 'connected' });
                     }
                     return hs;
                 }) });
-        case actions_1.SIGNALR_DISCONNECTED:
-            return __assign({}, state, { hubStatuses: state.hubStatuses.map(function (hs) {
+        case SIGNALR_DISCONNECTED:
+            return Object.assign({}, state, { hubStatuses: state.hubStatuses.map(hs => {
                     if (hs.hubName === action.hubName && hs.url === action.url) {
-                        return __assign({}, hs, { state: 'disconnected' });
+                        return Object.assign({}, hs, { state: 'disconnected' });
                     }
                     return hs;
                 }) });
-        case actions_1.SIGNALR_RECONNECTING:
-            return __assign({}, state, { hubStatuses: state.hubStatuses.map(function (hs) {
+        case SIGNALR_RECONNECTING:
+            return Object.assign({}, state, { hubStatuses: state.hubStatuses.map(hs => {
                     if (hs.hubName === action.hubName && hs.url === action.url) {
-                        return __assign({}, hs, { state: 'reconnecting' });
+                        return Object.assign({}, hs, { state: 'reconnecting' });
                     }
                     return hs;
                 }) });

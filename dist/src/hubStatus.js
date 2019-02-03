@@ -1,18 +1,16 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-var unstarted = 'unstarted';
-var connecting = 'connecting';
-var connected = 'connected';
-var disconnected = 'disconnected';
-var reconnecting = 'reconnecting';
-exports.SignalRStates = {
-    unstarted: unstarted,
-    connecting: connecting,
-    connected: connected,
-    disconnected: disconnected,
-    reconnecting: reconnecting
+const unstarted = 'unstarted';
+const connecting = 'connecting';
+const connected = 'connected';
+const disconnected = 'disconnected';
+const reconnecting = 'reconnecting';
+export const SignalRStates = {
+    unstarted,
+    connecting,
+    connected,
+    disconnected,
+    reconnecting
 };
-exports.toSignalRState = function (state) {
+export const toSignalRState = (state) => {
     switch (state) {
         case 0 /* Connecting */:
             return connecting;

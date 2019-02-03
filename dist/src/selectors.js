@@ -1,11 +1,6 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-var module_1 = require("./module");
-var store_1 = require("@ngrx/store");
-exports.selectSignalrState = function (state) { return state[module_1.DEFAULT_SIGNALR_FEATURENAME]; };
-exports.selectHubsStatuses = store_1.createSelector(exports.selectSignalrState, function (state) { return state.hubStatuses; });
-exports.selectHubStatus = store_1.createSelector(exports.selectSignalrState, function (state, _a) {
-    var hubName = _a.hubName, url = _a.url;
-    return state.hubStatuses.filter(function (hs) { return hs.hubName === hubName && hs.url === url; })[0];
-});
-exports.selectAreAllHubsConnected = store_1.createSelector(exports.selectHubsStatuses, function (hubStatuses) { return hubStatuses.every(function (hs) { return hs.state === 'connected'; }); });
+import { DEFAULT_SIGNALR_FEATURENAME } from "./module";
+import { createSelector } from "@ngrx/store";
+export const selectSignalrState = (state) => state[DEFAULT_SIGNALR_FEATURENAME];
+export const selectHubsStatuses = createSelector(selectSignalrState, state => state.hubStatuses);
+export const selectHubStatus = createSelector(selectSignalrState, (state, { hubName, url }) => state.hubStatuses.filter(hs => hs.hubName === hubName && hs.url === url)[0]);
+export const selectAreAllHubsConnected = createSelector(selectHubsStatuses, (hubStatuses) => hubStatuses.every(hs => hs.state === 'connected'));
