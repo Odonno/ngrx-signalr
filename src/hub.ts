@@ -64,13 +64,13 @@ export class SignalRHub {
             }
 
             this._connection = connection;
-        }
 
-        if (!this._connection) {
-            const error = new Error('Impossible to start the connection...');
-
-            this._startSubject.error(error);
-            return throwError(error);
+            if (!this._connection) {
+                const error = new Error('Impossible to start the connection...');
+    
+                this._startSubject.error(error);
+                return throwError(error);
+            }
         }
 
         if (!this.hasSubscriptions()) {
@@ -86,8 +86,17 @@ export class SignalRHub {
 
     on<T>(event: string): Observable<T> {
         if (!this._connection) {
-            console.warn('The connection has not been started yet. Please start the connection by invoking the start method before attempting to listen to event type ' + event + '.');
-            return new Observable<T>();
+            const { connection, error } = createConnection(this.url, this._errorSubject, this._stateSubject);
+            if (error) {
+                this._startSubject.error(error);
+                return throwError(error);
+            }
+
+            this._connection = connection;
+
+            if (!this._connection) {
+                return throwError(new Error('Impossible to listen to the connection...'));
+            }
         }
 
         if (!this._proxy) {
