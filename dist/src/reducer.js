@@ -32,13 +32,6 @@ exports.signalrReducer = function (state, action) {
                     }
                     return hs;
                 }) });
-        case actions_1.SIGNALR_HUB_STARTED:
-            return __assign({}, state, { hubStatuses: state.hubStatuses.map(function (hs) {
-                    if (hs.hubName === action.hubName && hs.url === action.url) {
-                        return __assign({}, hs, { state: 'started' });
-                    }
-                    return hs;
-                }) });
         case actions_1.SIGNALR_CONNECTING:
             return __assign({}, state, { hubStatuses: state.hubStatuses.map(function (hs) {
                     if (hs.hubName === action.hubName && hs.url === action.url) {

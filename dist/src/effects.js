@@ -23,12 +23,12 @@ var SignalREffects = /** @class */ (function () {
         // listen to start result (success/fail)
         // listen to change connection state (connecting, connected, disconnected, reconnecting)
         // listen to hub error
-        this.startHub$ = this.actions$.pipe(effects_1.ofType(actions_1.SIGNALR_HUB_UNSTARTED), operators_1.mergeMap(function (action) {
+        this.beforeStartHub$ = this.actions$.pipe(effects_1.ofType(actions_1.SIGNALR_HUB_UNSTARTED), operators_1.mergeMap(function (action) {
             var hub = hub_1.findHub(action.hubName, action.url);
             if (!hub) {
                 return rxjs_1.empty();
             }
-            var start$ = hub.start$.pipe(operators_1.map(function (_) { return ({ type: actions_1.SIGNALR_HUB_STARTED, hubName: action.hubName, url: action.url }); }), operators_1.catchError(function (error) { return rxjs_1.of(({ type: actions_1.SIGNALR_HUB_FAILED_TO_START, hubName: action.hubName, url: action.url, error: error })); }));
+            var start$ = hub.start$.pipe(operators_1.mergeMap(function (_) { return rxjs_1.empty(); }), operators_1.catchError(function (error) { return rxjs_1.of(({ type: actions_1.SIGNALR_HUB_FAILED_TO_START, hubName: action.hubName, url: action.url, error: error })); }));
             var state$ = hub.state$.pipe(operators_1.map(function (state) {
                 if (state === 'connecting') {
                     return { type: actions_1.SIGNALR_CONNECTING, hubName: action.hubName, url: action.url };
@@ -46,12 +46,22 @@ var SignalREffects = /** @class */ (function () {
             var error$ = hub.error$.pipe(operators_1.map(function (error) { return ({ type: actions_1.SIGNALR_ERROR, hubName: action.hubName, url: action.url, error: error }); }));
             return rxjs_1.merge(start$, state$, error$);
         }));
+        // start hub
+        this.startHub$ = this.actions$.pipe(effects_1.ofType(actions_1.SIGNALR_START_HUB), operators_1.tap(function (action) {
+            var hub = hub_1.findHub(action);
+            if (hub) {
+                hub.start();
+            }
+        }));
     }
     __decorate([
         effects_1.Effect()
     ], SignalREffects.prototype, "createHub$", void 0);
     __decorate([
         effects_1.Effect()
+    ], SignalREffects.prototype, "beforeStartHub$", void 0);
+    __decorate([
+        effects_1.Effect({ dispatch: false })
     ], SignalREffects.prototype, "startHub$", void 0);
     SignalREffects = __decorate([
         core_1.Injectable()

@@ -10,7 +10,6 @@ exports.SIGNALR_START_HUB = '@ngrx/signalr/startHub';
 exports.startSignalRHub = function (hubName, url) {
     return ({ type: exports.SIGNALR_START_HUB, hubName: hubName, url: url });
 };
-exports.SIGNALR_HUB_STARTED = '@ngrx/signalr/hubStarted';
 exports.SIGNALR_HUB_FAILED_TO_START = '@ngrx/signalr/hubFailedToStart';
 exports.SIGNALR_CONNECTING = '@ngrx/signalr/connecting';
 exports.SIGNALR_CONNECTED = '@ngrx/signalr/connected';

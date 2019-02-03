@@ -1,14 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var unstarted = 'unstarted';
-var started = 'started';
 var connecting = 'connecting';
 var connected = 'connected';
 var disconnected = 'disconnected';
 var reconnecting = 'reconnecting';
 exports.SignalRStates = {
     unstarted: unstarted,
-    started: started,
     connecting: connecting,
     connected: connected,
     disconnected: disconnected,

@@ -27,12 +27,6 @@ export declare const startSignalRHub: (hubName: string, url: string | undefined)
     hubName: string;
     url: string | undefined;
 };
-export declare const SIGNALR_HUB_STARTED = "@ngrx/signalr/hubStarted";
-export declare type SignalRHubStartedAction = {
-    type: typeof SIGNALR_HUB_STARTED;
-    hubName: string;
-    url: string | undefined;
-};
 export declare const SIGNALR_HUB_FAILED_TO_START = "@ngrx/signalr/hubFailedToStart";
 export declare type SignalRHubFailedToStartAction = {
     type: typeof SIGNALR_HUB_FAILED_TO_START;
@@ -71,4 +65,4 @@ export declare type SignalRErrorAction = {
     url: string | undefined;
     error: SignalR.ConnectionError;
 };
-export declare type SignalRAction = SignalRCreateHubAction | SignalRStartHubAction | SignalRHubUnstartedAction | SignalRHubStartedAction | SignalRHubFailedToStartAction | SignalRConnectingAction | SignalRConnectedAction | SignalRDisconnectedAction | SignalRReconnectingAction | SignalRErrorAction;
+export declare type SignalRAction = SignalRCreateHubAction | SignalRStartHubAction | SignalRHubUnstartedAction | SignalRHubFailedToStartAction | SignalRConnectingAction | SignalRConnectedAction | SignalRDisconnectedAction | SignalRReconnectingAction | SignalRErrorAction;

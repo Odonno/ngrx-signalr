@@ -1,9 +1,9 @@
 import { Injectable } from "@angular/core";
 import { Actions, Effect, ofType } from "@ngrx/effects";
 import { of, merge, empty } from "rxjs";
-import { map, mergeMap, catchError } from 'rxjs/operators';
+import { map, mergeMap, catchError, tap } from 'rxjs/operators';
 
-import { SIGNALR_HUB_UNSTARTED, SignalRHubUnstartedAction, SIGNALR_HUB_STARTED, SIGNALR_HUB_FAILED_TO_START, SIGNALR_ERROR, SIGNALR_CONNECTING, SIGNALR_CONNECTED, SIGNALR_DISCONNECTED, SIGNALR_RECONNECTING, SIGNALR_CREATE_HUB, SignalRCreateHubAction } from "./actions";
+import { SIGNALR_HUB_UNSTARTED, SignalRHubUnstartedAction, SIGNALR_HUB_FAILED_TO_START, SIGNALR_ERROR, SIGNALR_CONNECTING, SIGNALR_CONNECTED, SIGNALR_DISCONNECTED, SIGNALR_RECONNECTING, SIGNALR_CREATE_HUB, SignalRCreateHubAction, SignalRStartHubAction, SIGNALR_START_HUB } from "./actions";
 import { findHub, createHub } from "./hub";
 
 @Injectable()
@@ -22,7 +22,7 @@ export class SignalREffects {
     // listen to change connection state (connecting, connected, disconnected, reconnecting)
     // listen to hub error
     @Effect()
-    startHub$ = this.actions$.pipe(
+    beforeStartHub$ = this.actions$.pipe(
         ofType<SignalRHubUnstartedAction>(SIGNALR_HUB_UNSTARTED),
         mergeMap(action => {
             const hub = findHub(action.hubName, action.url);
@@ -32,7 +32,7 @@ export class SignalREffects {
             }
 
             const start$ = hub.start$.pipe(
-                map(_ => ({ type: SIGNALR_HUB_STARTED, hubName: action.hubName, url: action.url })),
+                mergeMap(_ => empty()),
                 catchError(error => of(({ type: SIGNALR_HUB_FAILED_TO_START, hubName: action.hubName, url: action.url, error })))
             );
 
@@ -61,7 +61,17 @@ export class SignalREffects {
         })
     );
 
-    constructor(
-        private actions$: Actions
-    ) { }
+    // start hub
+    @Effect({ dispatch: false })
+    startHub$ = this.actions$.pipe(
+        ofType<SignalRStartHubAction>(SIGNALR_START_HUB),
+        tap(action => {
+            const hub = findHub(action);
+            if (hub) {
+                hub.start();
+            }
+        })
+    );
+
+    constructor(private actions$: Actions) { }
 }

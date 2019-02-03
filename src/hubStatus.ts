@@ -1,5 +1,4 @@
 const unstarted = 'unstarted';
-const started = 'started';
 const connecting = 'connecting';
 const connected = 'connected';
 const disconnected = 'disconnected';
@@ -7,7 +6,6 @@ const reconnecting = 'reconnecting';
 
 export const SignalRStates = {
     unstarted,
-    started,
     connecting,
     connected,
     disconnected,
@@ -29,7 +27,6 @@ export const toSignalRState = (state: SignalR.ConnectionState): string => {
 
 export type SignalRHubState =
     | typeof unstarted
-    | typeof started
     | typeof connecting
     | typeof connected
     | typeof disconnected

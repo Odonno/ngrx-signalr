@@ -1,4 +1,4 @@
-import { SignalRAction, SIGNALR_CREATE_HUB, SIGNALR_HUB_UNSTARTED, SIGNALR_HUB_STARTED, SIGNALR_CONNECTING, SIGNALR_CONNECTED, SIGNALR_DISCONNECTED, SIGNALR_RECONNECTING } from "./actions";
+import { SignalRAction, SIGNALR_CREATE_HUB, SIGNALR_HUB_UNSTARTED, SIGNALR_CONNECTING, SIGNALR_CONNECTED, SIGNALR_DISCONNECTED, SIGNALR_RECONNECTING } from "./actions";
 import { SignalRHubStatus, SignalRHubState } from "./hubStatus";
 
 const initialState = {
@@ -33,19 +33,6 @@ export const signalrReducer = (
                         return {
                             ...hs,
                             state: 'unstarted' as SignalRHubState
-                        };
-                    }
-                    return hs;
-                })
-            };
-        case SIGNALR_HUB_STARTED:
-            return {
-                ...state,
-                hubStatuses: state.hubStatuses.map(hs => {
-                    if (hs.hubName === action.hubName && hs.url === action.url) {
-                        return {
-                            ...hs,
-                            state: 'started' as SignalRHubState
                         };
                     }
                     return hs;
