@@ -2,7 +2,7 @@ import { SIGNALR_CREATE_HUB, SIGNALR_HUB_UNSTARTED, SIGNALR_CONNECTING, SIGNALR_
 const initialState = {
     hubStatuses: []
 };
-export const signalrReducer = (state = initialState, action) => {
+export function signalrReducer(state = initialState, action) {
     switch (action.type) {
         case SIGNALR_CREATE_HUB:
             const newHubStatus = {
@@ -49,4 +49,4 @@ export const signalrReducer = (state = initialState, action) => {
         default:
             return state;
     }
-};
+}

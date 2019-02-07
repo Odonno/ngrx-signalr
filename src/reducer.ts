@@ -9,10 +9,10 @@ export interface BaseSignalRStoreState {
     hubStatuses: SignalRHubStatus[];
 }
 
-export const signalrReducer = (
+export function signalrReducer(
     state: BaseSignalRStoreState = initialState,
     action: SignalRAction
-): BaseSignalRStoreState => {
+): BaseSignalRStoreState {
     switch (action.type) {
         case SIGNALR_CREATE_HUB:
             const newHubStatus = {
