@@ -27,7 +27,6 @@ export { SignalRStates, SignalRHubState, SignalRHubStatus } from './src/hubStatu
 export {
     StateKeyOrSelector,
     StoreSignalRConnectionModule,
-    StoreSignalRConfig,
     SIGNALR_CONFIG
 } from './src/module';
 export { BaseSignalRStoreState, signalrReducer } from './src/reducer';
