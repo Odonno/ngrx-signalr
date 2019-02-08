@@ -1,5 +1,5 @@
 import { BaseSignalRStoreState } from "./reducer";
-import { DEFAULT_SIGNALR_FEATURENAME } from "./module";
+import { DEFAULT_SIGNALR_FEATURENAME } from "./constants";
 import { createSelector } from "@ngrx/store";
 
 interface AppState {

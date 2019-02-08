@@ -24,11 +24,6 @@ export {
 export { SignalREffects } from './src/effects';
 export { SignalRError, SignalRHub, createHub, findHub } from "./src/hub";
 export { SignalRStates, SignalRHubState, SignalRHubStatus } from './src/hubStatus';
-export {
-    StateKeyOrSelector,
-    StoreSignalRConnectionModule,
-    SIGNALR_CONFIG
-} from './src/module';
 export { BaseSignalRStoreState, signalrReducer } from './src/reducer';
 export {
     selectSignalrState,

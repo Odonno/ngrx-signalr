@@ -2,6 +2,5 @@ export { SIGNALR_CONNECTED, SIGNALR_CONNECTING, SIGNALR_CREATE_HUB, SIGNALR_DISC
 export { SignalREffects } from './src/effects';
 export { SignalRHub, createHub, findHub } from "./src/hub";
 export { SignalRStates } from './src/hubStatus';
-export { StoreSignalRConnectionModule, SIGNALR_CONFIG } from './src/module';
 export { signalrReducer } from './src/reducer';
 export { selectSignalrState, selectHubsStatuses, selectHubStatus, selectAreAllHubsConnected } from './src/selectors';

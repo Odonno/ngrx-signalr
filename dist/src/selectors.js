@@ -1,4 +1,4 @@
-import { DEFAULT_SIGNALR_FEATURENAME } from "./module";
+import { DEFAULT_SIGNALR_FEATURENAME } from "./constants";
 import { createSelector } from "@ngrx/store";
 export const selectSignalrState = (state) => state[DEFAULT_SIGNALR_FEATURENAME];
 export const selectHubsStatuses = createSelector(selectSignalrState, state => state.hubStatuses);
