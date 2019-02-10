@@ -52,7 +52,60 @@ export class AppModule { }
 
 ### Start with a single Hub
 
-TODO
+First, you will start the application by dispatching the creation of one Hub.
+
+```ts
+this.store.dispatch(
+    createSignalRHub('hubName', 'hubUrl')
+);
+```
+
+Then you will create an effect to start listening to events before starting the Hub.
+
+```ts
+@Effect()
+initRealtime$ = this.actions$.pipe(
+    ofType<SignalRHubUnstartedAction>(SIGNALR_HUB_UNSTARTED),
+    mergeMap<SignalRHubUnstartedAction, any>(action => {
+        const hub = findHub(action);
+
+        if (!hub) {
+            return of(realtimeError(new Error('No SignalR Hub found...')));
+        }
+
+        // add event listeners
+        const whenEvent$ = hub.on('eventName').pipe(
+            map(x => createAction(x))
+        );
+
+        return merge(
+            whenEvent$,
+            of(startSignalRHub(action.hubName, action.url))
+        );
+    })
+);
+```
+
+You can also send events at anytime.
+
+```ts
+@Effect()
+sendEvent$ = this.actions$.pipe(
+    ofType(SEND_EVENT),
+    mergeMap(action => {
+        const hub = findHub(action);
+
+        if (!hub) {
+            return of(realtimeError(new Error('No SignalR Hub found...')));
+        }
+
+        return hub.send('eventName', params).pipe(
+            map(_ => sendEventFulfilled()),
+            catchError(error => of(sendEventFailed(error)))
+        );
+    })
+);
+```
 
 ### Using multiple Hubs
 
@@ -243,7 +296,7 @@ beforeStartHub$: Observable<{
     hubName: string;
     url: string | undefined;
     error: SignalRError;
-} | undefined>;
+}>;
 ```
 
 ```ts
