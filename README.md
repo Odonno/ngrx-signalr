@@ -109,7 +109,51 @@ sendEvent$ = this.actions$.pipe(
 
 ### Using multiple Hubs
 
-TODO
+Now, start with multiple hubs at a time.
+
+```ts
+const dispatchHubCreation = (hubName, url?) => 
+    this.store.dispatch(
+        createSignalRHub(hubName, url)
+    );
+
+dispatchHubCreation('hub1');
+dispatchHubCreation('hub2');
+dispatchHubCreation('hub3');
+```
+
+You will then initialize your hubs in the same way but you need to know which one is initialized.
+
+```ts
+@Effect()
+initHubOne$ = this.actions$.pipe(
+    ofType<SignalRHubUnstartedAction>(SIGNALR_HUB_UNSTARTED),
+    filter(({ hubName }) => hubName === 'hub1'),
+    mergeMap<SignalRHubUnstartedAction, any>(action => {
+        // TODO : init hub 1
+    })
+);
+
+@Effect()
+initHubTwo$ = this.actions$.pipe(
+    ofType<SignalRHubUnstartedAction>(SIGNALR_HUB_UNSTARTED),
+    filter(({ hubName }) => hubName === 'hub2'),
+    mergeMap<SignalRHubUnstartedAction, any>(action => {
+        // TODO : init hub 2
+    })
+);
+```
+
+And then you can start your app when all hubs are connected the first time.
+
+```ts
+@Effect()
+appStarted$ = this.store.select(selectAreAllHubsConnected).pipe(
+    filter(areAllHubsConnected => !!areAllHubsConnected),
+    first(),
+    map(_ => of(appStarted()))
+);
+```
 
 ## Features
 

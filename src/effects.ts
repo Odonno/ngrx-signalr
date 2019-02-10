@@ -6,6 +6,8 @@ import { map, mergeMap, catchError, tap } from 'rxjs/operators';
 import { SIGNALR_HUB_UNSTARTED, SignalRHubUnstartedAction, SIGNALR_HUB_FAILED_TO_START, SIGNALR_ERROR, SIGNALR_CONNECTING, SIGNALR_CONNECTED, SIGNALR_DISCONNECTED, SIGNALR_RECONNECTING, SIGNALR_CREATE_HUB, SignalRCreateHubAction, SignalRStartHubAction, SIGNALR_START_HUB } from "./actions";
 import { findHub, createHub } from "./hub";
 
+// TODO : create ofHub rxjs operator
+
 @Injectable({
     providedIn: 'root'
 })
