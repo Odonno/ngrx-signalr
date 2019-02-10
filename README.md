@@ -62,23 +62,208 @@ TODO
 
 ### SignalR Hub
 
-TODO
+The SignalR Hub is an abstraction of the hub connection. It contains function you can use to:
+
+* start the connection
+* listen to events emitted
+* send a new event
+
+```ts
+class SignalRHub {
+    hubName: string;
+    url: string | undefined;
+    
+    start$: Observable<void>;
+    state$: Observable<string>;
+    error$: Observable<SignalRError>;
+
+    constructor(hubName: string, url: string | undefined);
+
+    start(): Observable<void>;
+    on<T>(event: string): Observable<T>;
+    send(method: string, ...args: any[]): Observable<any>;
+    hasSubscriptions(): boolean;
+}
+```
+
+You can find an existing hub by its name and url.
+
+```ts
+function findHub(hubName: string, url?: string | undefined): SignalRHub | undefined;
+function findHub({ hubName, url }: {
+    hubName: string;
+    url?: string | undefined;
+}): SignalRHub | undefined;
+```
+
+And create a new hub.
+
+```ts
+function createHub(hubName: string, url?: string | undefined): SignalRHub;
+```
 
 ### State
 
-TODO
+The state contains all existing hubs that was created with their according status (unstarted, connecting, connected, disconnected, reconnecting).
+
+```ts
+const unstarted = "unstarted";
+const connecting = "connecting";
+const connected = "connected";
+const disconnected = "disconnected";
+const reconnecting = "reconnecting";
+
+type SignalRHubState = 
+    | typeof unstarted 
+    | typeof connecting 
+    | typeof connected 
+    | typeof disconnected 
+    | typeof reconnecting;
+
+type SignalRHubStatus = {
+    hubName: string;
+    url: string | undefined;
+    state: SignalRHubState | undefined;
+};
+```
+
+```ts
+class BaseSignalRStoreState {
+    hubStatuses: SignalRHubStatus[];
+}
+```
 
 ### Actions
 
-TODO
+#### Actions to dispatch
+
+`createSignalRHub` will initialize a new hub connection but it won't start the connection so you can create event listeners.
+
+```ts
+const createSignalRHub = (hubName: string, url: string | undefined) => 
+    ({ type: SIGNALR_CREATE_HUB, hubName, url });
+```
+
+`startSignalRHub` will start the hub connection so you can send and receive events.
+
+```ts
+const startSignalRHub = (hubName: string, url: string | undefined) => 
+    ({ type: SIGNALR_START_HUB, hubName, url });
+```
+
+#### All existing actions
+
+```ts
+// used to create a new hub connection
+type SignalRCreateHubAction = {
+    type: "@ngrx/signalr/createHub";
+    hubName: string;
+    url: string | undefined;
+};
+// once the hub is created (default hub state)
+type SignalRHubUnstartedAction = {
+    type: "@ngrx/signalr/hubUnstarted";
+    hubName: string;
+    url: string | undefined;
+};
+// used to start the hub connection
+type SignalRStartHubAction = {
+    type: "@ngrx/signalr/startHub";
+    hubName: string;
+    url: string | undefined;
+};
+// if the hub connection failed to start
+type SignalRHubFailedToStartAction = {
+    type: "@ngrx/signalr/hubFailedToStart";
+    hubName: string;
+    url: string | undefined;
+    error: any;
+};
+// connecting event received from hub
+type SignalRConnectingAction = {
+    type: "@ngrx/signalr/connecting";
+    hubName: string;
+    url: string | undefined;
+};
+// connected event received from hub
+type SignalRConnectedAction = {
+    type: "@ngrx/signalr/connected";
+    hubName: string;
+    url: string | undefined;
+};
+// disconnected event received from hub
+type SignalRDisconnectedAction = {
+    type: "@ngrx/signalr/disconnected";
+    hubName: string;
+    url: string | undefined;
+};
+// reconnecting event received from hub
+type SignalRReconnectingAction = {
+    type: "@ngrx/signalr/reconnecting";
+    hubName: string;
+    url: string | undefined;
+};
+// error event received from hub
+type SignalRErrorAction = {
+    type: "@ngrx/signalr/error";
+    hubName: string;
+    url: string | undefined;
+    error: SignalR.ConnectionError;
+};
+```
 
 ### Effects
 
-TODO
+```ts
+// create hub automatically
+@Effect()
+createHub$: Observable<{
+    type: string;
+    hubName: string;
+    url: string | undefined;
+}>;
+```
+
+```ts
+// listen to start result (success/fail)
+// listen to change connection state (connecting, connected, disconnected, reconnecting)
+// listen to hub error
+@Effect()
+beforeStartHub$: Observable<{
+    type: string;
+    hubName: string;
+    url: string | undefined;
+    error: any;
+} | {
+    type: string;
+    hubName: string;
+    url: string | undefined;
+} | {
+    type: string;
+    hubName: string;
+    url: string | undefined;
+    error: SignalRError;
+} | undefined>;
+```
+
+```ts
+// start hub automatically
+@Effect({ dispatch: false })
+startHub$: Observable<SignalRStartHubAction>;
+```
 
 ### Selectors
 
-TODO
+```ts
+// used to select all hub statuses in state
+const hubStatuses$ = store.select(selectHubsStatuses);
+
+// used to select a single hub status based on its name and url
+const hubStatus$ = store.select(selectHubStatus, { hubName, url });
+
+// used to know if all hubs are connected
+const areAllHubsConnected$ = store.select(selectAreAllHubsConnected);
+```
 
 ## Publish a new version
 
