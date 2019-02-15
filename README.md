@@ -128,7 +128,7 @@ You will then initialize your hubs in the same way but you need to know which on
 @Effect()
 initHubOne$ = this.actions$.pipe(
     ofType<SignalRHubUnstartedAction>(SIGNALR_HUB_UNSTARTED),
-    filter(({ hubName }) => hubName === 'hub1'),
+    ofHub('hub1'),
     mergeMap<SignalRHubUnstartedAction, any>(action => {
         // TODO : init hub 1
     })
@@ -137,7 +137,7 @@ initHubOne$ = this.actions$.pipe(
 @Effect()
 initHubTwo$ = this.actions$.pipe(
     ofType<SignalRHubUnstartedAction>(SIGNALR_HUB_UNSTARTED),
-    filter(({ hubName }) => hubName === 'hub2'),
+    ofHub('hub2'),
     mergeMap<SignalRHubUnstartedAction, any>(action => {
         // TODO : init hub 2
     })

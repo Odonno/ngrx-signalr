@@ -10,10 +10,17 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 import { Injectable } from "@angular/core";
 import { Actions, Effect, ofType } from "@ngrx/effects";
 import { of, merge, empty } from "rxjs";
-import { map, mergeMap, catchError, tap } from 'rxjs/operators';
+import { map, mergeMap, catchError, tap, filter } from 'rxjs/operators';
 import { SIGNALR_HUB_UNSTARTED, SIGNALR_HUB_FAILED_TO_START, SIGNALR_ERROR, SIGNALR_CONNECTING, SIGNALR_CONNECTED, SIGNALR_DISCONNECTED, SIGNALR_RECONNECTING, SIGNALR_CREATE_HUB, SIGNALR_START_HUB } from "./actions";
 import { findHub, createHub } from "./hub";
-// TODO : create ofHub rxjs operator
+export function ofHub(x, url) {
+    if (typeof x === 'string') {
+        return filter((action) => action.hubName === x && action.url === url);
+    }
+    else {
+        return filter(action => action.hubName === x.hubName && action.url === x.url);
+    }
+}
 let SignalREffects = class SignalREffects {
     constructor(actions$) {
         this.actions$ = actions$;

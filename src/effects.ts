@@ -1,12 +1,26 @@
 import { Injectable } from "@angular/core";
 import { Actions, Effect, ofType } from "@ngrx/effects";
-import { of, merge, empty } from "rxjs";
-import { map, mergeMap, catchError, tap } from 'rxjs/operators';
+import { of, merge, empty, MonoTypeOperatorFunction } from "rxjs";
+import { map, mergeMap, catchError, tap, filter } from 'rxjs/operators';
 
 import { SIGNALR_HUB_UNSTARTED, SignalRHubUnstartedAction, SIGNALR_HUB_FAILED_TO_START, SIGNALR_ERROR, SIGNALR_CONNECTING, SIGNALR_CONNECTED, SIGNALR_DISCONNECTED, SIGNALR_RECONNECTING, SIGNALR_CREATE_HUB, SignalRCreateHubAction, SignalRStartHubAction, SIGNALR_START_HUB } from "./actions";
 import { findHub, createHub } from "./hub";
+import { Action } from "@ngrx/store";
 
-// TODO : create ofHub rxjs operator
+interface HubAction extends Action {
+    hubName: string;
+    url: string;
+}
+
+export function ofHub(hubName: string, url?: string | undefined): MonoTypeOperatorFunction<HubAction>;
+export function ofHub({ hubName, url }: { hubName: string, url?: string | undefined }): MonoTypeOperatorFunction<HubAction>;
+export function ofHub(x: string | { hubName: string, url?: string | undefined }, url?: string | undefined): MonoTypeOperatorFunction<HubAction> {
+    if (typeof x === 'string') {
+        return filter((action: HubAction) => action.hubName === x && action.url === url);
+    } else {
+        return filter(action => action.hubName === x.hubName && action.url === x.url);
+    }
+}
 
 @Injectable({
     providedIn: 'root'
