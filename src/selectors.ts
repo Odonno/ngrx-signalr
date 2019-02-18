@@ -14,7 +14,7 @@ export const selectHubsStatuses = createSelector(
 );
 export const selectHubStatus = createSelector(
     selectSignalrState,
-    (state: BaseSignalRStoreState, { hubName, url }: { hubName: string, url: string | undefined }) =>
+    (state: BaseSignalRStoreState, { hubName, url }: { hubName: string, url?: string | undefined }) =>
         state.hubStatuses.filter(hs => hs.hubName === hubName && hs.url === url)[0],
 );
 export const selectAreAllHubsConnected = createSelector(

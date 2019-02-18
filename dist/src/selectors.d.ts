@@ -6,7 +6,7 @@ export declare const selectSignalrState: (state: AppState) => BaseSignalRStoreSt
 export declare const selectHubsStatuses: import("@ngrx/store").MemoizedSelector<AppState, import("./hubStatus").SignalRHubStatus[]>;
 export declare const selectHubStatus: import("@ngrx/store").MemoizedSelectorWithProps<AppState, {
     hubName: string;
-    url: string | undefined;
+    url?: string | undefined;
 }, import("./hubStatus").SignalRHubStatus>;
 export declare const selectAreAllHubsConnected: import("@ngrx/store").MemoizedSelector<AppState, boolean>;
 export {};

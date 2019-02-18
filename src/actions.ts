@@ -6,7 +6,7 @@ export type SignalRCreateHubAction = {
     hubName: string;
     url: string | undefined;
 };
-export const createSignalRHub = (hubName: string, url: string | undefined) => 
+export const createSignalRHub = (hubName: string, url?: string | undefined) => 
     ({ type: SIGNALR_CREATE_HUB, hubName, url });
 
 export const SIGNALR_HUB_UNSTARTED = '@ngrx/signalr/hubUnstarted';
@@ -22,7 +22,7 @@ export type SignalRStartHubAction = {
     hubName: string;
     url: string | undefined;
 };
-export const startSignalRHub = (hubName: string, url: string | undefined) => 
+export const startSignalRHub = (hubName: string, url?: string | undefined) => 
     ({ type: SIGNALR_START_HUB, hubName, url });
 
 export const SIGNALR_HUB_FAILED_TO_START = '@ngrx/signalr/hubFailedToStart';

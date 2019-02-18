@@ -5,7 +5,7 @@ export declare type SignalRCreateHubAction = {
     hubName: string;
     url: string | undefined;
 };
-export declare const createSignalRHub: (hubName: string, url: string | undefined) => {
+export declare const createSignalRHub: (hubName: string, url?: string | undefined) => {
     type: string;
     hubName: string;
     url: string | undefined;
@@ -22,7 +22,7 @@ export declare type SignalRStartHubAction = {
     hubName: string;
     url: string | undefined;
 };
-export declare const startSignalRHub: (hubName: string, url: string | undefined) => {
+export declare const startSignalRHub: (hubName: string, url?: string | undefined) => {
     type: string;
     hubName: string;
     url: string | undefined;
