@@ -3,7 +3,7 @@ export const SIGNALR_CREATE_HUB = '@ngrx/signalr/createHub';
 export const createSignalRHub = (hubName, url) => ({ type: SIGNALR_CREATE_HUB, hubName, url });
 export const SIGNALR_HUB_UNSTARTED = '@ngrx/signalr/hubUnstarted';
 export const SIGNALR_START_HUB = '@ngrx/signalr/startHub';
-export const startSignalRHub = (hubName, url) => ({ type: SIGNALR_START_HUB, hubName, url });
+export const startSignalRHub = (hubName, url, options) => ({ type: SIGNALR_START_HUB, hubName, url, options });
 export const SIGNALR_HUB_FAILED_TO_START = '@ngrx/signalr/hubFailedToStart';
 export const SIGNALR_CONNECTING = '@ngrx/signalr/connecting';
 export const SIGNALR_CONNECTED = '@ngrx/signalr/connected';

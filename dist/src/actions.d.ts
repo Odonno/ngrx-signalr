@@ -21,11 +21,13 @@ export declare type SignalRStartHubAction = {
     type: typeof SIGNALR_START_HUB;
     hubName: string;
     url: string | undefined;
+    options?: SignalR.ConnectionOptions | undefined;
 };
-export declare const startSignalRHub: (hubName: string, url?: string | undefined) => {
+export declare const startSignalRHub: (hubName: string, url?: string | undefined, options?: SignalR.ConnectionOptions | undefined) => {
     type: string;
     hubName: string;
     url: string | undefined;
+    options: SignalR.ConnectionOptions | undefined;
 };
 export declare const SIGNALR_HUB_FAILED_TO_START = "@ngrx/signalr/hubFailedToStart";
 export declare type SignalRHubFailedToStartAction = {

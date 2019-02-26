@@ -31,7 +31,7 @@ export class SignalRHub {
         this.state$ = this._stateSubject.asObservable();
         this.error$ = this._errorSubject.asObservable();
     }
-    start() {
+    start(options) {
         if (!this._connection) {
             const { connection, error } = createConnection(this.url, this._errorSubject, this._stateSubject);
             if (error) {
@@ -48,9 +48,16 @@ export class SignalRHub {
         if (!this.hasSubscriptions()) {
             console.warn('No listeners have been setup. You need to setup a listener before starting the connection or you will not receive data.');
         }
-        this._connection.start()
-            .done(_ => this._startSubject.next())
-            .fail((error) => this._startSubject.error(error));
+        if (options) {
+            this._connection.start(options)
+                .done(_ => this._startSubject.next())
+                .fail((error) => this._startSubject.error(error));
+        }
+        else {
+            this._connection.start()
+                .done(_ => this._startSubject.next())
+                .fail((error) => this._startSubject.error(error));
+        }
         return this._startSubject.asObservable();
     }
     on(event) {

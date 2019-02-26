@@ -59,7 +59,7 @@ let SignalREffects = class SignalREffects {
         this.startHub$ = this.actions$.pipe(ofType(SIGNALR_START_HUB), tap(action => {
             const hub = findHub(action);
             if (hub) {
-                hub.start();
+                hub.start(action.options);
             }
         }));
     }

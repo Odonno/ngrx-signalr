@@ -21,9 +21,10 @@ export type SignalRStartHubAction = {
     type: typeof SIGNALR_START_HUB;
     hubName: string;
     url: string | undefined;
+    options?: SignalR.ConnectionOptions | undefined;
 };
-export const startSignalRHub = (hubName: string, url?: string | undefined) => 
-    ({ type: SIGNALR_START_HUB, hubName, url });
+export const startSignalRHub = (hubName: string, url?: string | undefined, options?: SignalR.ConnectionOptions | undefined) => 
+    ({ type: SIGNALR_START_HUB, hubName, url, options });
 
 export const SIGNALR_HUB_FAILED_TO_START = '@ngrx/signalr/hubFailedToStart';
 export type SignalRHubFailedToStartAction = {
