@@ -1,6 +1,8 @@
 # ngrx-signalr
 
-A library to handle realtime SignalR events using angular, rxjs and the @ngrx library.
+A library to handle realtime SignalR (.NET Framework) events using angular, rxjs and the @ngrx library.
+
+*This library is made for the SignalR client using .NET Framework. If you need target .NET Core, please check this repository : https://github.com/Odonno/ngrx-signalr-core*
 
 ## Get started
 
