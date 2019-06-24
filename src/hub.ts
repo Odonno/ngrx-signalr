@@ -1,19 +1,13 @@
 import 'signalr';
-import { Observable, Subject, from, throwError } from 'rxjs';
-
+import { Observable, Subject, from, throwError, timer } from 'rxjs';
 import { toSignalRState } from './hubStatus';
-
-export interface SignalRError extends Error {
-    context?: any;
-    transport?: string;
-    source?: string;
-}
+import { hubCreationFunc, testingEnabled } from './testing';
 
 const getOrCreateSubject = <T>(subjects: { [name: string]: Subject<any> }, event: string): Subject<T> => {
     return subjects[event] || (subjects[event] = new Subject<T>());
 }
 
-const createConnection = (url: string | undefined, errorSubject: Subject<SignalRError>, stateSubject: Subject<string>): { connection?: SignalR.Hub.Connection, error?: Error } => {
+const createConnection = (url: string | undefined, errorSubject: Subject<SignalR.ConnectionError>, stateSubject: Subject<string>): { connection?: SignalR.Hub.Connection, error?: Error } => {
     if (!$) {
         return { error: new Error('jQuery is not defined.') }
     }
@@ -37,17 +31,31 @@ const createConnection = (url: string | undefined, errorSubject: Subject<SignalR
     return { connection };
 }
 
-export class SignalRHub {
+export interface ISignalRHub {
+    hubName: string;
+    url: string | undefined;
+
+    start$: Observable<void>;
+    state$: Observable<string>;
+    error$: Observable<SignalR.ConnectionError>;
+
+    start(options?: SignalR.ConnectionOptions | undefined): Observable<void>;
+    on<T>(eventName: string): Observable<T>;
+    send(methodName: string, ...args: any[]): Observable<any>;
+    hasSubscriptions(): boolean;
+}
+
+export class SignalRHub implements ISignalRHub {
     private _connection: SignalR.Hub.Connection | undefined;
     private _proxy: SignalR.Hub.Proxy | undefined;
     private _startSubject = new Subject<void>();
     private _stateSubject = new Subject<string>();
-    private _errorSubject = new Subject<SignalRError>();
+    private _errorSubject = new Subject<SignalR.ConnectionError>();
     private _subjects: { [name: string]: Subject<any> } = {};
 
     start$: Observable<void>;
     state$: Observable<string>;
-    error$: Observable<SignalRError>;
+    error$: Observable<SignalR.ConnectionError>;
 
     constructor(public hubName: string, public url: string | undefined) {
         this.start$ = this._startSubject.asObservable();
@@ -138,18 +146,67 @@ export class SignalRHub {
     }
 }
 
-const hubs: SignalRHub[] = [];
+export abstract class SignalRTestingHub implements ISignalRHub {
+    private _startSubject = new Subject<void>();
+    private _stateSubject = new Subject<string>();
+    private _errorSubject = new Subject<SignalR.ConnectionError>();
+    private _subjects: { [eventName: string]: Subject<any> } = {};
 
-export function findHub(hubName: string, url?: string | undefined): SignalRHub | undefined;
-export function findHub({ hubName, url }: { hubName: string, url?: string | undefined }): SignalRHub | undefined;
-export function findHub(x: string | { hubName: string, url?: string | undefined }, url?: string | undefined): SignalRHub | undefined {
+    start$: Observable<void>;
+    state$: Observable<string>;
+    error$: Observable<SignalR.ConnectionError>;
+
+    constructor(public hubName: string, public url: string) {
+        this.start$ = this._startSubject.asObservable();
+        this.state$ = this._stateSubject.asObservable();
+        this.error$ = this._errorSubject.asObservable();
+    }
+
+    start(): Observable<void> {
+        timer(100).subscribe(_ => {
+            this._startSubject.next();
+            this._stateSubject.next('connected');
+        });
+
+        return this._startSubject.asObservable();
+    }
+
+    abstract on<T>(eventName: string): Observable<T>;
+
+    abstract send(methodName: string, ...args: any[]): Observable<any>;
+
+    hasSubscriptions(): boolean {
+        for (let key in this._subjects) {
+            if (this._subjects.hasOwnProperty(key)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+}
+
+const hubs: ISignalRHub[] = [];
+
+export function findHub(hubName: string, url?: string | undefined): ISignalRHub | undefined;
+export function findHub({ hubName, url }: { hubName: string, url?: string | undefined }): ISignalRHub | undefined;
+export function findHub(x: string | { hubName: string, url?: string | undefined }, url?: string | undefined): ISignalRHub | undefined {
     if (typeof x === 'string') {
         return hubs.filter(h => h.hubName === x && h.url === url)[0];
     }
     return hubs.filter(h => h.hubName === x.hubName && h.url === x.url)[0];
 };
 
-export const createHub = (hubName: string, url?: string | undefined): SignalRHub => {
+export const createHub = (hubName: string, url?: string | undefined): ISignalRHub | undefined => {
+    if (testingEnabled) {
+        const hub = hubCreationFunc(hubName, url);
+        if (hub) {
+            hubs.push(hub);
+            return hub;
+        }
+        return undefined;
+    }
+
     const hub = new SignalRHub(hubName, url);
     hubs.push(hub);
     return hub;

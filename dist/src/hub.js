@@ -1,6 +1,7 @@
 import 'signalr';
-import { Subject, from, throwError } from 'rxjs';
+import { Subject, from, throwError, timer } from 'rxjs';
 import { toSignalRState } from './hubStatus';
+import { hubCreationFunc, testingEnabled } from './testing';
 const getOrCreateSubject = (subjects, event) => {
     return subjects[event] || (subjects[event] = new Subject());
 };
@@ -97,6 +98,34 @@ export class SignalRHub {
         return false;
     }
 }
+export class SignalRTestingHub {
+    constructor(hubName, url) {
+        this.hubName = hubName;
+        this.url = url;
+        this._startSubject = new Subject();
+        this._stateSubject = new Subject();
+        this._errorSubject = new Subject();
+        this._subjects = {};
+        this.start$ = this._startSubject.asObservable();
+        this.state$ = this._stateSubject.asObservable();
+        this.error$ = this._errorSubject.asObservable();
+    }
+    start() {
+        timer(100).subscribe(_ => {
+            this._startSubject.next();
+            this._stateSubject.next('connected');
+        });
+        return this._startSubject.asObservable();
+    }
+    hasSubscriptions() {
+        for (let key in this._subjects) {
+            if (this._subjects.hasOwnProperty(key)) {
+                return true;
+            }
+        }
+        return false;
+    }
+}
 const hubs = [];
 export function findHub(x, url) {
     if (typeof x === 'string') {
@@ -106,6 +135,14 @@ export function findHub(x, url) {
 }
 ;
 export const createHub = (hubName, url) => {
+    if (testingEnabled) {
+        const hub = hubCreationFunc(hubName, url);
+        if (hub) {
+            hubs.push(hub);
+            return hub;
+        }
+        return undefined;
+    }
     const hub = new SignalRHub(hubName, url);
     hubs.push(hub);
     return hub;

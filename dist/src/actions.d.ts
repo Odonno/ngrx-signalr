@@ -1,70 +1,110 @@
 import 'signalr';
-export declare const SIGNALR_CREATE_HUB = "@ngrx/signalr/createHub";
-export declare type SignalRCreateHubAction = {
-    type: typeof SIGNALR_CREATE_HUB;
+export declare const createSignalRHub: import("@ngrx/store").ActionCreator<"@ngrx/signalr/createHub", (props: {
     hubName: string;
-    url: string | undefined;
-};
-export declare const createSignalRHub: (hubName: string, url?: string | undefined) => {
-    type: string;
+    url?: string | undefined;
+}) => {
     hubName: string;
-    url: string | undefined;
-};
+    url?: string | undefined;
+} & import("@ngrx/store/src/models").TypedAction<"@ngrx/signalr/createHub">>;
 export declare const SIGNALR_HUB_UNSTARTED = "@ngrx/signalr/hubUnstarted";
-export declare type SignalRHubUnstartedAction = {
-    type: typeof SIGNALR_HUB_UNSTARTED;
+export declare const signalrHubUnstarted: import("@ngrx/store").ActionCreator<"@ngrx/signalr/hubUnstarted", (props: {
     hubName: string;
     url: string | undefined;
-};
-export declare const SIGNALR_START_HUB = "@ngrx/signalr/startHub";
-export declare type SignalRStartHubAction = {
-    type: typeof SIGNALR_START_HUB;
+}) => {
     hubName: string;
     url: string | undefined;
+} & import("@ngrx/store/src/models").TypedAction<"@ngrx/signalr/hubUnstarted">>;
+export declare const startSignalRHub: import("@ngrx/store").ActionCreator<"@ngrx/signalr/startHub", (props: {
+    hubName: string;
+    url?: string | undefined;
     options?: SignalR.ConnectionOptions | undefined;
-};
-export declare const startSignalRHub: (hubName: string, url?: string | undefined, options?: SignalR.ConnectionOptions | undefined) => {
-    type: string;
+}) => {
     hubName: string;
-    url: string | undefined;
-    options: SignalR.ConnectionOptions | undefined;
-};
+    url?: string | undefined;
+    options?: SignalR.ConnectionOptions | undefined;
+} & import("@ngrx/store/src/models").TypedAction<"@ngrx/signalr/startHub">>;
 export declare const SIGNALR_HUB_FAILED_TO_START = "@ngrx/signalr/hubFailedToStart";
-export declare type SignalRHubFailedToStartAction = {
-    type: typeof SIGNALR_HUB_FAILED_TO_START;
+export declare const signalrHubFailedToStart: import("@ngrx/store").ActionCreator<"@ngrx/signalr/hubFailedToStart", (props: {
     hubName: string;
     url: string | undefined;
     error: any;
-};
+}) => {
+    hubName: string;
+    url: string | undefined;
+    error: any;
+} & import("@ngrx/store/src/models").TypedAction<"@ngrx/signalr/hubFailedToStart">>;
 export declare const SIGNALR_CONNECTING = "@ngrx/signalr/connecting";
-export declare type SignalRConnectingAction = {
-    type: typeof SIGNALR_CONNECTING;
+export declare const signalrConnecting: import("@ngrx/store").ActionCreator<"@ngrx/signalr/connecting", (props: {
     hubName: string;
     url: string | undefined;
-};
+}) => {
+    hubName: string;
+    url: string | undefined;
+} & import("@ngrx/store/src/models").TypedAction<"@ngrx/signalr/connecting">>;
 export declare const SIGNALR_CONNECTED = "@ngrx/signalr/connected";
-export declare type SignalRConnectedAction = {
-    type: typeof SIGNALR_CONNECTED;
+export declare const signalrConnected: import("@ngrx/store").ActionCreator<"@ngrx/signalr/connected", (props: {
     hubName: string;
     url: string | undefined;
-};
+}) => {
+    hubName: string;
+    url: string | undefined;
+} & import("@ngrx/store/src/models").TypedAction<"@ngrx/signalr/connected">>;
 export declare const SIGNALR_DISCONNECTED = "@ngrx/signalr/disconnected";
-export declare type SignalRDisconnectedAction = {
-    type: typeof SIGNALR_DISCONNECTED;
+export declare const signalrDisconnected: import("@ngrx/store").ActionCreator<"@ngrx/signalr/disconnected", (props: {
     hubName: string;
     url: string | undefined;
-};
+}) => {
+    hubName: string;
+    url: string | undefined;
+} & import("@ngrx/store/src/models").TypedAction<"@ngrx/signalr/disconnected">>;
 export declare const SIGNALR_RECONNECTING = "@ngrx/signalr/reconnecting";
-export declare type SignalRReconnectingAction = {
-    type: typeof SIGNALR_RECONNECTING;
+export declare const signalrReconnecting: import("@ngrx/store").ActionCreator<"@ngrx/signalr/reconnecting", (props: {
     hubName: string;
     url: string | undefined;
-};
+}) => {
+    hubName: string;
+    url: string | undefined;
+} & import("@ngrx/store/src/models").TypedAction<"@ngrx/signalr/reconnecting">>;
 export declare const SIGNALR_ERROR = "@ngrx/signalr/error";
-export declare type SignalRErrorAction = {
-    type: typeof SIGNALR_ERROR;
+export declare const signalrError: import("@ngrx/store").ActionCreator<"@ngrx/signalr/error", (props: {
     hubName: string;
     url: string | undefined;
     error: SignalR.ConnectionError;
-};
-export declare type SignalRAction = SignalRCreateHubAction | SignalRStartHubAction | SignalRHubUnstartedAction | SignalRHubFailedToStartAction | SignalRConnectingAction | SignalRConnectedAction | SignalRDisconnectedAction | SignalRReconnectingAction | SignalRErrorAction;
+}) => {
+    hubName: string;
+    url: string | undefined;
+    error: SignalR.ConnectionError;
+} & import("@ngrx/store/src/models").TypedAction<"@ngrx/signalr/error">>;
+declare const signalRAction: ({
+    hubName: string;
+    url?: string | undefined;
+} & import("@ngrx/store/src/models").TypedAction<"@ngrx/signalr/createHub">) | ({
+    hubName: string;
+    url: string | undefined;
+} & import("@ngrx/store/src/models").TypedAction<"@ngrx/signalr/hubUnstarted">) | ({
+    hubName: string;
+    url?: string | undefined;
+    options?: SignalR.ConnectionOptions | undefined;
+} & import("@ngrx/store/src/models").TypedAction<"@ngrx/signalr/startHub">) | ({
+    hubName: string;
+    url: string | undefined;
+    error: any;
+} & import("@ngrx/store/src/models").TypedAction<"@ngrx/signalr/hubFailedToStart">) | ({
+    hubName: string;
+    url: string | undefined;
+} & import("@ngrx/store/src/models").TypedAction<"@ngrx/signalr/connecting">) | ({
+    hubName: string;
+    url: string | undefined;
+} & import("@ngrx/store/src/models").TypedAction<"@ngrx/signalr/connected">) | ({
+    hubName: string;
+    url: string | undefined;
+} & import("@ngrx/store/src/models").TypedAction<"@ngrx/signalr/disconnected">) | ({
+    hubName: string;
+    url: string | undefined;
+} & import("@ngrx/store/src/models").TypedAction<"@ngrx/signalr/reconnecting">) | ({
+    hubName: string;
+    url: string | undefined;
+    error: SignalR.ConnectionError;
+} & import("@ngrx/store/src/models").TypedAction<"@ngrx/signalr/error">);
+export declare type SignalRAction = typeof signalRAction;
+export {};
