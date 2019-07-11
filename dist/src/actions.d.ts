@@ -75,6 +75,13 @@ export declare const signalrError: import("@ngrx/store").ActionCreator<"@ngrx/si
     url: string | undefined;
     error: SignalR.ConnectionError;
 } & import("@ngrx/store/src/models").TypedAction<"@ngrx/signalr/error">>;
+export declare const hubNotFound: import("@ngrx/store").ActionCreator<"@ngrx/signalr/hubNotFound", (props: {
+    hubName: string;
+    url: string | undefined;
+}) => {
+    hubName: string;
+    url: string | undefined;
+} & import("@ngrx/store/src/models").TypedAction<"@ngrx/signalr/hubNotFound">>;
 declare const signalRAction: ({
     hubName: string;
     url?: string | undefined;
@@ -105,6 +112,9 @@ declare const signalRAction: ({
     hubName: string;
     url: string | undefined;
     error: SignalR.ConnectionError;
-} & import("@ngrx/store/src/models").TypedAction<"@ngrx/signalr/error">);
+} & import("@ngrx/store/src/models").TypedAction<"@ngrx/signalr/error">) | ({
+    hubName: string;
+    url: string | undefined;
+} & import("@ngrx/store/src/models").TypedAction<"@ngrx/signalr/hubNotFound">);
 export declare type SignalRAction = typeof signalRAction;
 export {};
