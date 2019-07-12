@@ -163,7 +163,8 @@ And then you can start your app when all hubs are connected the first time.
 
 ```ts
 appStarted$ = createEffect(() => 
-    this.store.select(selectAreAllHubsConnected).pipe(
+    this.store.pipe(
+        select(selectAreAllHubsConnected),
         filter(areAllHubsConnected => !!areAllHubsConnected),
         first(),
         map(_ => of(appStarted()))
@@ -318,13 +319,19 @@ startHub$: Observable<SignalRStartHubAction>;
 
 ```ts
 // used to select all hub statuses in state
-const hubStatuses$ = store.select(selectHubsStatuses);
+const hubStatuses$ = store.pipe(
+    select(selectHubsStatuses)
+);
 
 // used to select a single hub status based on its name and url
-const hubStatus$ = store.select(selectHubStatus, { hubName, url });
+const hubStatus$ = store.pipe(
+    select(selectHubStatus, { hubName, url })
+);
 
 // used to know if all hubs are connected
-const areAllHubsConnected$ = store.select(selectAreAllHubsConnected);
+const areAllHubsConnected$ = store.pipe(
+    select(selectAreAllHubsConnected)
+);
 ```
 
 ## Publish a new version
