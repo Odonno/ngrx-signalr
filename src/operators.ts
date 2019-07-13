@@ -5,7 +5,7 @@ import { findHub } from "./hub";
 
 interface HubAction extends Action {
     hubName: string;
-    url: string;
+    url?: string | undefined;
 }
 
 export function ofHub(hubName: string, url?: string | undefined): MonoTypeOperatorFunction<HubAction>;

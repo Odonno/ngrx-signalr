@@ -175,6 +175,21 @@ appStarted$ = createEffect(() =>
 );
 ```
 
+### Handling reconnection
+
+By design in .NET Framework, a SignalR client will attempt to reconnect to the server automatically until a specified threshold time is reached. Until we reached this limit (of 30 seconds by default), the hub is in `reconnecting` mode. After that, the hub switch to `disconnected` mode and no further attempt is made to reconnect.
+
+So, if you want to reconnect to the hub in `disconnected` state, you have to handle it manually by writing an `effect`.
+
+```ts
+// try to reconnect every 10s (when the navigator is online)
+whenDisconnected$ = createReconnectEffect(this.actions$, 10 * 1000);
+```
+
+In this example, we apply a periodic reconnection attempt every 10 seconds when the hub is `disconnected` and when there is a network connection.
+
+Of course, you can write your own `Effect` to you have the benefit to write your own reconnection pattern (periodic retry, exponential retry, etc..).
+
 ## Features
 
 ### SignalR Hub
