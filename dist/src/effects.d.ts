@@ -43,6 +43,10 @@ export declare const createReconnectEffect: (actions$: Actions<({
 } & import("@ngrx/store/src/models").TypedAction<"@ngrx/signalr/hubUnstarted">) | ({
     hubName: string;
     url?: string | undefined;
+    options?: SignalR.ConnectionOptions | undefined;
+} & import("@ngrx/store/src/models").TypedAction<"@ngrx/signalr/startHub">) | ({
+    hubName: string;
+    url?: string | undefined;
     error: any;
 } & import("@ngrx/store/src/models").TypedAction<"@ngrx/signalr/hubFailedToStart">) | ({
     hubName: string;
@@ -61,10 +65,6 @@ export declare const createReconnectEffect: (actions$: Actions<({
     url?: string | undefined;
     error: SignalR.ConnectionError;
 } & import("@ngrx/store/src/models").TypedAction<"@ngrx/signalr/error">) | ({
-    hubName: string;
-    url?: string | undefined;
-    options?: SignalR.ConnectionOptions | undefined;
-} & import("@ngrx/store/src/models").TypedAction<"@ngrx/signalr/startHub">) | ({
     hubName: string;
     url?: string | undefined;
 } & import("@ngrx/store/src/models").TypedAction<"@ngrx/signalr/hubNotFound">)>, intervalTimespan: number) => import("rxjs").Observable<({
