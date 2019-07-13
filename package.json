@@ -1,6 +1,6 @@
 {
   "name": "ngrx-signalr",
-  "version": "8.0.4",
+  "version": "8.0.5",
   "description": "A library to handle realtime SignalR events using angular and rxjs",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "@types/signalr": "^2.2.35",
-    "jquery": "^3.3.1",
+    "jquery": "^3.4.1",
     "signalr": "^2.4.0"
   },
   "peerDependencies": {
