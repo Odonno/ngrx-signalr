@@ -35,5 +35,5 @@ export type SignalRHubState =
 export type SignalRHubStatus = {
     hubName: string;
     url: string | undefined;
-    state: SignalRHubState | undefined;
+    state: SignalRHubState;
 }

@@ -255,7 +255,7 @@ type SignalRHubState =
 type SignalRHubStatus = {
     hubName: string;
     url: string | undefined;
-    state: SignalRHubState | undefined;
+    state: SignalRHubState;
 };
 ```
 
