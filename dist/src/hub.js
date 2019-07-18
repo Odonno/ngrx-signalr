@@ -49,6 +49,7 @@ export class SignalRHub {
         if (!this.hasSubscriptions()) {
             console.warn('No listeners have been setup. You need to setup a listener before starting the connection or you will not receive data.');
         }
+        this.options = options;
         if (options) {
             this._connection.start(options)
                 .done(_ => this._startSubject.next())

@@ -57,13 +57,15 @@ export class SignalRHub implements ISignalRHub {
     state$: Observable<string>;
     error$: Observable<SignalR.ConnectionError>;
 
+    options?: SignalR.ConnectionOptions;
+
     constructor(public hubName: string, public url: string | undefined) {
         this.start$ = this._startSubject.asObservable();
         this.state$ = this._stateSubject.asObservable();
         this.error$ = this._errorSubject.asObservable();
     }
 
-    start(options?: SignalR.ConnectionOptions | undefined): Observable<void> {
+    start(options?: SignalR.ConnectionOptions): Observable<void> {
         if (!this._connection) {
             const { connection, error } = createConnection(this.url, this._errorSubject, this._stateSubject);
             if (error) {
@@ -84,6 +86,8 @@ export class SignalRHub implements ISignalRHub {
         if (!this.hasSubscriptions()) {
             console.warn('No listeners have been setup. You need to setup a listener before starting the connection or you will not receive data.');
         }
+
+        this.options = options;
 
         if (options) {
             this._connection.start(options)
