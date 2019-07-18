@@ -350,6 +350,11 @@ const hubStatus$ = store.pipe(
 const areAllHubsConnected$ = store.pipe(
     select(selectAreAllHubsConnected)
 );
+
+// used to know when a hub is in a particular state
+const hasHubState$ = store.pipe(
+    select(selectHasHubState, { hubName, url, state })
+);
 ```
 
 ## Publish a new version
