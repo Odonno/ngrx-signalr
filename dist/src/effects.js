@@ -83,7 +83,11 @@ export const createReconnectEffect = (actions$, intervalTimespan) => {
                     return EMPTY;
                 }
                 return timer(0, intervalTimespan);
-            }), map(_ => startSignalRHub(hub)), takeUntil(actions$.pipe(ofType(signalrConnected), ofHub(action))));
+            }), map(_ => startSignalRHub({
+                hubName: hub.hubName,
+                url: hub.url,
+                options: hub.options
+            })), takeUntil(actions$.pipe(ofType(signalrConnected), ofHub(action))));
         }));
     })));
 };

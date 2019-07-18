@@ -2,7 +2,8 @@ import 'signalr';
 import { Observable } from 'rxjs';
 export interface ISignalRHub {
     hubName: string;
-    url: string | undefined;
+    url?: string;
+    options?: SignalR.ConnectionOptions;
     start$: Observable<void>;
     state$: Observable<string>;
     error$: Observable<SignalR.ConnectionError>;
@@ -13,7 +14,7 @@ export interface ISignalRHub {
 }
 export declare class SignalRHub implements ISignalRHub {
     hubName: string;
-    url: string | undefined;
+    url?: string | undefined;
     private _connection;
     private _proxy;
     private _startSubject;
@@ -24,7 +25,7 @@ export declare class SignalRHub implements ISignalRHub {
     state$: Observable<string>;
     error$: Observable<SignalR.ConnectionError>;
     options?: SignalR.ConnectionOptions;
-    constructor(hubName: string, url: string | undefined);
+    constructor(hubName: string, url?: string | undefined);
     start(options?: SignalR.ConnectionOptions): Observable<void>;
     on<T>(event: string): Observable<T>;
     send(method: string, ...args: any[]): Observable<any>;
@@ -32,7 +33,7 @@ export declare class SignalRHub implements ISignalRHub {
 }
 export declare abstract class SignalRTestingHub implements ISignalRHub {
     hubName: string;
-    url: string;
+    url?: string | undefined;
     private _startSubject;
     private _stateSubject;
     private _errorSubject;
@@ -40,7 +41,8 @@ export declare abstract class SignalRTestingHub implements ISignalRHub {
     start$: Observable<void>;
     state$: Observable<string>;
     error$: Observable<SignalR.ConnectionError>;
-    constructor(hubName: string, url: string);
+    options?: SignalR.ConnectionOptions;
+    constructor(hubName: string, url?: string | undefined);
     start(): Observable<void>;
     abstract on<T>(eventName: string): Observable<T>;
     abstract send(methodName: string, ...args: any[]): Observable<any>;

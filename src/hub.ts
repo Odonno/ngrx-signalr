@@ -33,7 +33,8 @@ const createConnection = (url: string | undefined, errorSubject: Subject<SignalR
 
 export interface ISignalRHub {
     hubName: string;
-    url: string | undefined;
+    url?: string;
+    options?: SignalR.ConnectionOptions;
 
     start$: Observable<void>;
     state$: Observable<string>;
@@ -59,7 +60,7 @@ export class SignalRHub implements ISignalRHub {
 
     options?: SignalR.ConnectionOptions;
 
-    constructor(public hubName: string, public url: string | undefined) {
+    constructor(public hubName: string, public url?: string) {
         this.start$ = this._startSubject.asObservable();
         this.state$ = this._stateSubject.asObservable();
         this.error$ = this._errorSubject.asObservable();
@@ -160,7 +161,9 @@ export abstract class SignalRTestingHub implements ISignalRHub {
     state$: Observable<string>;
     error$: Observable<SignalR.ConnectionError>;
 
-    constructor(public hubName: string, public url: string) {
+    options?: SignalR.ConnectionOptions;
+
+    constructor(public hubName: string, public url?: string) {
         this.start$ = this._startSubject.asObservable();
         this.state$ = this._stateSubject.asObservable();
         this.error$ = this._errorSubject.asObservable();
