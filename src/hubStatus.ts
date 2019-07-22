@@ -1,3 +1,5 @@
+import { HubKeyDefinition } from "./models";
+
 const unstarted = 'unstarted';
 const connecting = 'connecting';
 const connected = 'connected';
@@ -32,8 +34,6 @@ export type SignalRHubState =
     | typeof disconnected
     | typeof reconnecting;
 
-export type SignalRHubStatus = {
-    hubName: string;
-    url: string | undefined;
+export type SignalRHubStatus = HubKeyDefinition & {
     state: SignalRHubState;
 }

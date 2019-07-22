@@ -1,4 +1,5 @@
 /// <reference types="signalr" />
+import { HubKeyDefinition } from "./models";
 declare const unstarted = "unstarted";
 declare const connecting = "connecting";
 declare const connected = "connected";
@@ -13,9 +14,7 @@ export declare const SignalRStates: {
 };
 export declare const toSignalRState: (state: SignalR.ConnectionState) => string;
 export declare type SignalRHubState = typeof unstarted | typeof connecting | typeof connected | typeof disconnected | typeof reconnecting;
-export declare type SignalRHubStatus = {
-    hubName: string;
-    url: string | undefined;
+export declare type SignalRHubStatus = HubKeyDefinition & {
     state: SignalRHubState;
 };
 export {};

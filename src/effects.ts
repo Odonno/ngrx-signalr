@@ -1,11 +1,11 @@
 import { Injectable } from "@angular/core";
 import { Actions, ofType, createEffect } from "@ngrx/effects";
 import { of, merge, EMPTY, fromEvent, timer } from "rxjs";
-import { map, mergeMap, catchError, tap, startWith, switchMap, takeUntil, exhaustMap, groupBy } from 'rxjs/operators';
+import { map, mergeMap, catchError, tap, startWith, switchMap, takeUntil, groupBy } from 'rxjs/operators';
 
 import { findHub, createHub } from "./hub";
-import { createSignalRHub, signalrHubUnstarted, signalrHubFailedToStart, signalrConnected, signalrDisconnected, signalrError, startSignalRHub, signalrConnecting, signalrReconnecting, hubNotFound } from "./actions";
-import { ofHub } from "./operators";
+import { createSignalRHub, signalrHubUnstarted, signalrHubFailedToStart, signalrConnected, signalrDisconnected, signalrError, startSignalRHub, signalrConnecting, signalrReconnecting } from "./actions";
+import { ofHub, exhaustMapHubToAction } from "./operators";
 import { Action } from "@ngrx/store";
 
 @Injectable({
@@ -34,7 +34,7 @@ export class SignalREffects {
         this.actions$.pipe(
             ofType(signalrHubUnstarted),
             mergeMap(action => {
-                const hub = findHub(action.hubName, action.url);
+                const hub = findHub(action);
 
                 if (!hub) {
                     return EMPTY;
@@ -106,15 +106,10 @@ export const createReconnectEffect = (actions$: Actions<Action>, intervalTimespa
         actions$.pipe(
             ofType(signalrDisconnected),
             groupBy(action => action.hubName),
-            mergeMap(group => {
-                return group.pipe(
-                    exhaustMap(action => {
-                        const hub = findHub(action);
-                        if (!hub) {
-                            return of(hubNotFound(action));
-                        }
-
-                        return isOnline().pipe(
+            mergeMap(group =>
+                group.pipe(
+                    exhaustMapHubToAction(({ action, hub }) =>
+                        isOnline().pipe(
                             switchMap(online => {
                                 if (!online) {
                                     return EMPTY;
@@ -132,10 +127,10 @@ export const createReconnectEffect = (actions$: Actions<Action>, intervalTimespa
                                     ofHub(action)
                                 )
                             )
-                        );
-                    })
-                );
-            })
+                        )
+                    )
+                )
+            )
         )
     );
 };
