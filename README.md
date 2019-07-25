@@ -59,7 +59,7 @@ First, you will start the application by dispatching the creation of one Hub.
 ```ts
 // TODO : your hub definition
 const hub = {
-    name: 'hub name',
+    hubName: 'hub name',
     url: 'https://localhost/path'
 };
 
@@ -95,7 +95,12 @@ You can also send events at anytime.
 sendEvent$ = createEffect(() => 
     this.actions$.pipe(
         ofType(SEND_EVENT), // TODO : create a custom action
-        mergeMapHubToAction(({ hub }) => {
+        mergeMap(({ params }) => {
+            const hub = findHub(timeHub);
+            if (!hub) {
+                return of(hubNotFound(timeHub));
+            }
+
             // TODO : send event to the hub
             return hub.send('eventName', params).pipe(
                 map(_ => sendEventFulfilled()),
@@ -114,9 +119,9 @@ Now, start with multiple hubs at a time.
 // simplified hub creation
 const dispatchHubCreation = (hub) => this.store.dispatch(createSignalRHub(hub));
 
-const hub1 = {}; // define name and url
-const hub2 = {}; // define name and url
-const hub3 = {}; // define name and url
+const hub1 = {}; // define hubName and url
+const hub2 = {}; // define hubName and url
+const hub3 = {}; // define hubName and url
 
 dispatchHubCreation(hub1);
 dispatchHubCreation(hub2);
@@ -126,8 +131,8 @@ dispatchHubCreation(hub3);
 You will then initialize your hubs in the same way but you need to know which one is initialized.
 
 ```ts
-const hub1 = {}; // define name and url
-const hub2 = {}; // define name and url
+const hub1 = {}; // define hubName and url
+const hub2 = {}; // define hubName and url
 
 initHubOne$ = createEffect(() => 
     this.actions$.pipe(
