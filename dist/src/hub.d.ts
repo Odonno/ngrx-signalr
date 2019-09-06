@@ -7,7 +7,7 @@ export interface ISignalRHub {
     start$: Observable<void>;
     state$: Observable<string>;
     error$: Observable<SignalR.ConnectionError>;
-    start(options?: SignalR.ConnectionOptions | undefined): Observable<void>;
+    start(options?: SignalR.ConnectionOptions | undefined, beforeConnectionStart?: (connection: SignalR.Hub.Connection | undefined) => void): Observable<void>;
     on<T>(eventName: string): Observable<T>;
     send(methodName: string, ...args: any[]): Observable<any>;
     hasSubscriptions(): boolean;
@@ -26,7 +26,7 @@ export declare class SignalRHub implements ISignalRHub {
     error$: Observable<SignalR.ConnectionError>;
     options?: SignalR.ConnectionOptions;
     constructor(hubName: string, url?: string | undefined);
-    start(options?: SignalR.ConnectionOptions): Observable<void>;
+    start(options?: SignalR.ConnectionOptions, beforeConnectionStart?: (connection: SignalR.Hub.Connection | undefined) => void): Observable<void>;
     on<T>(event: string): Observable<T>;
     send(method: string, ...args: any[]): Observable<any>;
     hasSubscriptions(): boolean;

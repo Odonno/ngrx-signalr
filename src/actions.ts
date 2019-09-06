@@ -14,7 +14,7 @@ export const signalrHubUnstarted = createAction(
 
 export const startSignalRHub = createAction(
     '@ngrx/signalr/startHub',
-    props<{ hubName: string, url?: string | undefined, options?: SignalR.ConnectionOptions | undefined }>()
+    props<{ hubName: string, url?: string | undefined, options?: SignalR.ConnectionOptions | undefined,  beforeConnectionStart?: (connection : SignalR.Hub.Connection | undefined) => void }>()
 );
 
 export const SIGNALR_HUB_FAILED_TO_START = '@ngrx/signalr/hubFailedToStart';

@@ -32,7 +32,7 @@ export class SignalRHub {
         this.state$ = this._stateSubject.asObservable();
         this.error$ = this._errorSubject.asObservable();
     }
-    start(options) {
+    start(options, beforeConnectionStart) {
         if (!this._connection) {
             const { connection, error } = createConnection(this.url, this._errorSubject, this._stateSubject);
             if (error) {
@@ -50,6 +50,9 @@ export class SignalRHub {
             console.warn('No listeners have been setup. You need to setup a listener before starting the connection or you will not receive data.');
         }
         this.options = options;
+        if (beforeConnectionStart) {
+            beforeConnectionStart(this._connection);
+        }
         if (options) {
             this._connection.start(options)
                 .done(_ => this._startSubject.next())

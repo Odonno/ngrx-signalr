@@ -40,7 +40,7 @@ export interface ISignalRHub {
     state$: Observable<string>;
     error$: Observable<SignalR.ConnectionError>;
 
-    start(options?: SignalR.ConnectionOptions | undefined): Observable<void>;
+    start(options?: SignalR.ConnectionOptions | undefined, beforeConnectionStart?: (connection : SignalR.Hub.Connection | undefined) => void): Observable<void>;
     on<T>(eventName: string): Observable<T>;
     send(methodName: string, ...args: any[]): Observable<any>;
     hasSubscriptions(): boolean;
@@ -66,7 +66,7 @@ export class SignalRHub implements ISignalRHub {
         this.error$ = this._errorSubject.asObservable();
     }
 
-    start(options?: SignalR.ConnectionOptions): Observable<void> {
+    start(options?: SignalR.ConnectionOptions, beforeConnectionStart?: (connection : SignalR.Hub.Connection | undefined) => void): Observable<void> {
         if (!this._connection) {
             const { connection, error } = createConnection(this.url, this._errorSubject, this._stateSubject);
             if (error) {
@@ -89,6 +89,10 @@ export class SignalRHub implements ISignalRHub {
         }
 
         this.options = options;
+
+        if(beforeConnectionStart) {
+            beforeConnectionStart(this._connection);
+        }
 
         if (options) {
             this._connection.start(options)
