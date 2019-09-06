@@ -18,10 +18,12 @@ export declare const startSignalRHub: import("@ngrx/store").ActionCreator<"@ngrx
     hubName: string;
     url?: string | undefined;
     options?: SignalR.ConnectionOptions | undefined;
+    beforeConnectionStart?: ((connection: SignalR.Hub.Connection | undefined) => void) | undefined;
 }) => {
     hubName: string;
     url?: string | undefined;
     options?: SignalR.ConnectionOptions | undefined;
+    beforeConnectionStart?: ((connection: SignalR.Hub.Connection | undefined) => void) | undefined;
 } & import("@ngrx/store/src/models").TypedAction<"@ngrx/signalr/startHub">>;
 export declare const SIGNALR_HUB_FAILED_TO_START = "@ngrx/signalr/hubFailedToStart";
 export declare const signalrHubFailedToStart: import("@ngrx/store").ActionCreator<"@ngrx/signalr/hubFailedToStart", (props: {
@@ -92,6 +94,7 @@ declare const signalRAction: ({
     hubName: string;
     url?: string | undefined;
     options?: SignalR.ConnectionOptions | undefined;
+    beforeConnectionStart?: ((connection: SignalR.Hub.Connection | undefined) => void) | undefined;
 } & import("@ngrx/store/src/models").TypedAction<"@ngrx/signalr/startHub">) | ({
     hubName: string;
     url?: string | undefined;

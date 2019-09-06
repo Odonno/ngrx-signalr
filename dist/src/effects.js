@@ -56,7 +56,7 @@ let SignalREffects = class SignalREffects {
         this.startHub$ = createEffect(() => this.actions$.pipe(ofType(startSignalRHub), tap(action => {
             const hub = findHub(action);
             if (hub) {
-                hub.start(action.options);
+                hub.start(action.options, action.beforeConnectionStart);
             }
         })), { dispatch: false });
     }
