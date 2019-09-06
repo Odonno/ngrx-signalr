@@ -1,6 +1,6 @@
 {
   "name": "@lumico/ngrx-signalr",
-  "version": "8.1.0",
+  "version": "8.2.0",
   "description": "A library fork to handle realtime SignalR events using angular and rxjs",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
