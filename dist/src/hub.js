@@ -25,12 +25,26 @@ export class SignalRHub {
         this.hubName = hubName;
         this.url = url;
         this._startSubject = new Subject();
+        this._stopSubject = new Subject();
         this._stateSubject = new Subject();
         this._errorSubject = new Subject();
         this._subjects = {};
         this.start$ = this._startSubject.asObservable();
+        this.stop$ = this._stopSubject.asObservable();
         this.state$ = this._stateSubject.asObservable();
         this.error$ = this._errorSubject.asObservable();
+    }
+    stop(async, notifyServer) {
+        if (this._connection) {
+            try {
+                this._connection.stop(async, notifyServer);
+                this._stopSubject.next();
+            }
+            catch (error) {
+                this._stopSubject.error(error);
+            }
+        }
+        return this._stopSubject.asObservable();
     }
     start(options, beforeConnectionStart) {
         if (!this._connection) {
@@ -107,10 +121,12 @@ export class SignalRTestingHub {
         this.hubName = hubName;
         this.url = url;
         this._startSubject = new Subject();
+        this._stopSubject = new Subject();
         this._stateSubject = new Subject();
         this._errorSubject = new Subject();
         this._subjects = {};
         this.start$ = this._startSubject.asObservable();
+        this.stop$ = this._startSubject.asObservable();
         this.state$ = this._stateSubject.asObservable();
         this.error$ = this._errorSubject.asObservable();
     }
@@ -118,6 +134,12 @@ export class SignalRTestingHub {
         timer(100).subscribe(_ => {
             this._startSubject.next();
             this._stateSubject.next('connected');
+        });
+        return this._startSubject.asObservable();
+    }
+    stop(async, notifyServer) {
+        timer(100).subscribe(_ => {
+            this._stopSubject.next();
         });
         return this._startSubject.asObservable();
     }
