@@ -11,7 +11,10 @@
     "type": "git",
     "url": "git+https://github.com/Odonno/ngrx-signalr.git"
   },
-  "author": "Odonno",
+  "authors": [
+    "Odonno",
+    "Nivrith"
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/Odonno/ngrx-signalr/issues"

@@ -41,6 +41,7 @@ export interface ISignalRHub {
     error$: Observable<SignalR.ConnectionError>;
 
     start(options?: SignalR.ConnectionOptions | undefined): Observable<void>;
+    stop(async?: boolean, notifyServer?: boolean): Observable<void>;
     on<T>(eventName: string): Observable<T>;
     send(methodName: string, ...args: any[]): Observable<any>;
     hasSubscriptions(): boolean;
@@ -50,11 +51,13 @@ export class SignalRHub implements ISignalRHub {
     private _connection: SignalR.Hub.Connection | undefined;
     private _proxy: SignalR.Hub.Proxy | undefined;
     private _startSubject = new Subject<void>();
+    private _stopSubject = new Subject<void>();
     private _stateSubject = new Subject<string>();
     private _errorSubject = new Subject<SignalR.ConnectionError>();
     private _subjects: { [name: string]: Subject<any> } = {};
 
     start$: Observable<void>;
+    stop$: Observable<void>;
     state$: Observable<string>;
     error$: Observable<SignalR.ConnectionError>;
 
@@ -62,8 +65,21 @@ export class SignalRHub implements ISignalRHub {
 
     constructor(public hubName: string, public url?: string) {
         this.start$ = this._startSubject.asObservable();
+        this.stop$ = this._stopSubject.asObservable();
         this.state$ = this._stateSubject.asObservable();
         this.error$ = this._errorSubject.asObservable();
+    }
+
+    stop(async?: boolean, notifyServer?: boolean): Observable<void> {
+        if (this._connection) {
+            try{
+                this._connection.stop(async, notifyServer);
+                this._stopSubject.next();
+            } catch (error) {
+                this._stopSubject.error(error);
+            }
+        }
+        return this._stopSubject.asObservable();
     }
 
     start(options?: SignalR.ConnectionOptions): Observable<void> {
@@ -153,11 +169,15 @@ export class SignalRHub implements ISignalRHub {
 
 export abstract class SignalRTestingHub implements ISignalRHub {
     private _startSubject = new Subject<void>();
+    private _stopSubject = new Subject<void>();
     private _stateSubject = new Subject<string>();
     private _errorSubject = new Subject<SignalR.ConnectionError>();
     private _subjects: { [eventName: string]: Subject<any> } = {};
 
     start$: Observable<void>;
+
+    stop$: Observable<void>;
+
     state$: Observable<string>;
     error$: Observable<SignalR.ConnectionError>;
 
@@ -165,6 +185,7 @@ export abstract class SignalRTestingHub implements ISignalRHub {
 
     constructor(public hubName: string, public url?: string) {
         this.start$ = this._startSubject.asObservable();
+        this.stop$ = this._startSubject.asObservable();
         this.state$ = this._stateSubject.asObservable();
         this.error$ = this._errorSubject.asObservable();
     }
@@ -173,6 +194,14 @@ export abstract class SignalRTestingHub implements ISignalRHub {
         timer(100).subscribe(_ => {
             this._startSubject.next();
             this._stateSubject.next('connected');
+        });
+
+        return this._startSubject.asObservable();
+    }
+
+    stop(async?: boolean, notifyServer?: boolean): Observable<void> {
+        timer(100).subscribe(_ => {
+            this._stopSubject.next();
         });
 
         return this._startSubject.asObservable();
