@@ -71,14 +71,16 @@ export class SignalRHub implements ISignalRHub {
     }
 
     stop(async?: boolean, notifyServer?: boolean): Observable<void> {
-        if (this._connection) {
-            try{
-                this._connection.stop(async, notifyServer);
-                this._stopSubject.next();
-            } catch (error) {
-                this._stopSubject.error(error);
+        setTimeout(() => {
+            if (this._connection) {
+                try {
+                    this._connection.stop(async, notifyServer);
+                    this._stopSubject.next();
+                } catch (error) {
+                    this._stopSubject.error(error);
+                }
             }
-        }
+        }, 0);
         return this._stopSubject.asObservable();
     }
 

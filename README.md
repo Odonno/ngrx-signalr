@@ -338,7 +338,7 @@ startHub$: Observable<SignalRStartHubAction>;
 ```
 ```ts
 // stop hub 
-startHub$: Observable<SignalRStopHubAction>;
+stopHub$: Observable<SignalRStopHubAction>;
 ```
 
 ### Selectors
