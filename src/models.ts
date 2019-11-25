@@ -2,14 +2,14 @@ import { Action } from "@ngrx/store";
 
 export type HubKeyDefinition = {
     hubName: string;
-    url?: string | undefined;
+    url?: string;
 };
 
 export type HubFullDefinition = HubKeyDefinition & {
-    options?: SignalR.ConnectionOptions | undefined;
+    options?: SignalR.ConnectionOptions;
 };
 
 export interface HubAction extends Action {
     hubName: string;
-    url?: string | undefined;
+    url?: string;
 }

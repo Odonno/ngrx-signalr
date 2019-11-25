@@ -6,7 +6,7 @@ import { HubKeyDefinition } from "./models";
     providedIn: 'root',
 })
 export class StoreSignalRService {
-    findHub(x: string | HubKeyDefinition, url?: string | undefined) {
+    findHub(x: string | HubKeyDefinition, url?: string) {
         if (typeof x === 'string') {
             return findHub(x, url || '');
         } else {
@@ -14,7 +14,7 @@ export class StoreSignalRService {
         }
     }
 
-    createHub(hubName: string, url?: string | undefined) {
+    createHub(hubName: string, url?: string) {
         return createHub(hubName, url);
     }
 }

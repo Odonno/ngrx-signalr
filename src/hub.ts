@@ -7,7 +7,31 @@ const getOrCreateSubject = <T>(subjects: { [name: string]: Subject<any> }, event
     return subjects[event] || (subjects[event] = new Subject<T>());
 }
 
-const createConnection = (url: string | undefined, errorSubject: Subject<SignalR.ConnectionError>, stateSubject: Subject<string>): { connection?: SignalR.Hub.Connection, error?: Error } => {
+let localCachedConnection: SignalR.Hub.Connection | undefined = undefined;
+const cachedConnections: { [url: string]: SignalR.Hub.Connection } = {};
+
+const getOrCreateCachedConnection = (url: string | undefined) => {
+    if (url) {
+        if (!cachedConnections[url]) {
+            cachedConnections[url] = $.hubConnection(url);
+        }
+    
+        return cachedConnections[url];
+    }
+
+    if (!localCachedConnection) {
+        localCachedConnection = $.hubConnection(url);
+    }
+    
+    return localCachedConnection;
+}
+
+const createConnection = (
+    url: string | undefined,
+    errorSubject: Subject<SignalR.ConnectionError>,
+    stateSubject: Subject<string>,
+    useSharedConnection: boolean
+): { connection?: SignalR.Hub.Connection, error?: Error } => {
     if (!$) {
         return { error: new Error('jQuery is not defined.') }
     }
@@ -15,7 +39,9 @@ const createConnection = (url: string | undefined, errorSubject: Subject<SignalR
         return { error: new Error('The $.hubConnection function is not defined. Please check if you imported SignalR correctly.') }
     }
 
-    const connection = $.hubConnection(url);
+    const connection = useSharedConnection
+        ? getOrCreateCachedConnection(url)
+        : $.hubConnection(url);
 
     if (!connection) {
         return { error: new Error("Impossible to create the hub '" + url + "'.") }
@@ -40,13 +66,14 @@ export interface ISignalRHub {
     state$: Observable<string>;
     error$: Observable<SignalR.ConnectionError>;
 
-    start(options?: SignalR.ConnectionOptions | undefined): Observable<void>;
+    start(useSharedConnection?: boolean, options?: SignalR.ConnectionOptions): Observable<void>;
     on<T>(eventName: string): Observable<T>;
     send(methodName: string, ...args: any[]): Observable<any>;
     hasSubscriptions(): boolean;
 }
 
 export class SignalRHub implements ISignalRHub {
+    private _useSharedConnection: boolean = true;
     private _connection: SignalR.Hub.Connection | undefined;
     private _proxy: SignalR.Hub.Proxy | undefined;
     private _startSubject = new Subject<void>();
@@ -66,9 +93,13 @@ export class SignalRHub implements ISignalRHub {
         this.error$ = this._errorSubject.asObservable();
     }
 
-    start(options?: SignalR.ConnectionOptions): Observable<void> {
+    start(useSharedConnection?: boolean, options?: SignalR.ConnectionOptions): Observable<void> {
+        if (useSharedConnection !== undefined) {
+            this._useSharedConnection = useSharedConnection;
+        }
+
         if (!this._connection) {
-            const { connection, error } = createConnection(this.url, this._errorSubject, this._stateSubject);
+            const { connection, error } = createConnection(this.url, this._errorSubject, this._stateSubject, this._useSharedConnection);
             if (error) {
                 this._startSubject.error(error);
                 return throwError(error);
@@ -105,7 +136,7 @@ export class SignalRHub implements ISignalRHub {
 
     on<T>(event: string): Observable<T> {
         if (!this._connection) {
-            const { connection, error } = createConnection(this.url, this._errorSubject, this._stateSubject);
+            const { connection, error } = createConnection(this.url, this._errorSubject, this._stateSubject, this._useSharedConnection);
             if (error) {
                 this._startSubject.error(error);
                 return throwError(error);
@@ -195,16 +226,16 @@ export abstract class SignalRTestingHub implements ISignalRHub {
 
 const hubs: ISignalRHub[] = [];
 
-export function findHub(hubName: string, url?: string | undefined): ISignalRHub | undefined;
-export function findHub({ hubName, url }: { hubName: string, url?: string | undefined }): ISignalRHub | undefined;
-export function findHub(x: string | { hubName: string, url?: string | undefined }, url?: string | undefined): ISignalRHub | undefined {
+export function findHub(hubName: string, url?: string): ISignalRHub | undefined;
+export function findHub({ hubName, url }: { hubName: string, url?: string }): ISignalRHub | undefined;
+export function findHub(x: string | { hubName: string, url?: string }, url?: string): ISignalRHub | undefined {
     if (typeof x === 'string') {
         return hubs.filter(h => h.hubName === x && h.url === url)[0];
     }
     return hubs.filter(h => h.hubName === x.hubName && h.url === x.url)[0];
 };
 
-export const createHub = (hubName: string, url?: string | undefined): ISignalRHub | undefined => {
+export const createHub = (hubName: string, url?: string): ISignalRHub | undefined => {
     if (testingEnabled) {
         const hub = hubCreationFunc(hubName, url);
         if (hub) {

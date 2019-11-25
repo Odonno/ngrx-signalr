@@ -79,7 +79,7 @@ export class SignalREffects {
             tap(action => {
                 const hub = findHub(action);
                 if (hub) {
-                    hub.start(action.options);
+                    hub.start(action.useSharedConnection, action.options);
                 }
             })
         ),
