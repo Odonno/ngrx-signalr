@@ -3,7 +3,7 @@ import { createAction, props, union } from '@ngrx/store';
 
 export const createSignalRHub = createAction(
     '@ngrx/signalr/createHub',
-    props<{ hubName: string, url?: string }>()
+    props<{ hubName: string, url?: string, useSharedConnection?: boolean }>()
 );
 
 export const SIGNALR_HUB_UNSTARTED = '@ngrx/signalr/hubUnstarted';
@@ -14,7 +14,7 @@ export const signalrHubUnstarted = createAction(
 
 export const startSignalRHub = createAction(
     '@ngrx/signalr/startHub',
-    props<{ hubName: string, url?: string, options?: SignalR.ConnectionOptions, useSharedConnection?: boolean }>()
+    props<{ hubName: string, url?: string, options?: SignalR.ConnectionOptions }>()
 );
 
 export const SIGNALR_HUB_FAILED_TO_START = '@ngrx/signalr/hubFailedToStart';

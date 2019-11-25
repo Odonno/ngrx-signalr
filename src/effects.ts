@@ -17,7 +17,7 @@ export class SignalREffects {
         this.actions$.pipe(
             ofType(createSignalRHub),
             mergeMap(action => {
-                const hub = createHub(action.hubName, action.url);
+                const hub = createHub(action.hubName, action.url, action.useSharedConnection);
                 if (!hub) {
                     return EMPTY;
                 }
@@ -79,7 +79,7 @@ export class SignalREffects {
             tap(action => {
                 const hub = findHub(action);
                 if (hub) {
-                    hub.start(action.useSharedConnection, action.options);
+                    hub.start(action.options);
                 }
             })
         ),

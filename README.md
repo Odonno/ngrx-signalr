@@ -202,9 +202,9 @@ interface ISignalRHub {
     state$: Observable<string>;
     error$: Observable<SignalR.ConnectionError>;
 
-    constructor(hubName: string, url?: string | undefined);
+    constructor(hubName: string, url?: string, useSharedConnection?: boolean);
 
-    start(useSharedConnection?: boolean, options?: SignalR.ConnectionOptions): Observable<void>;
+    start(options?: SignalR.ConnectionOptions): Observable<void>;
     on<T>(event: string): Observable<T>;
     send(method: string, ...args: any[]): Observable<any>;
     hasSubscriptions(): boolean;
@@ -224,7 +224,7 @@ function findHub({ hubName, url }: {
 And create a new hub.
 
 ```ts
-function createHub(hubName: string, url?: string): ISignalRHub;
+function createHub(hubName: string, url?: string, useSharedConnection?: boolean): ISignalRHub;
 ```
 
 ### State
@@ -267,7 +267,7 @@ class BaseSignalRStoreState {
 ```ts
 const createSignalRHub = createAction(
     '@ngrx/signalr/createHub',
-    props<{ hubName: string, url?: string }>()
+    props<{ hubName: string, url?: string, useSharedConnection?: boolean }>()
 );
 ```
 
@@ -276,7 +276,7 @@ const createSignalRHub = createAction(
 ```ts
 const startSignalRHub = createAction(
     '@ngrx/signalr/startHub',
-    props<{ hubName: string, url?: string, options?: SignalR.ConnectionOptions, useSharedConnection?: boolean }>()
+    props<{ hubName: string, url?: string, options?: SignalR.ConnectionOptions }>()
 );
 ```
 

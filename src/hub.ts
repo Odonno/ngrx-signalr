@@ -66,14 +66,13 @@ export interface ISignalRHub {
     state$: Observable<string>;
     error$: Observable<SignalR.ConnectionError>;
 
-    start(useSharedConnection?: boolean, options?: SignalR.ConnectionOptions): Observable<void>;
+    start(options?: SignalR.ConnectionOptions): Observable<void>;
     on<T>(eventName: string): Observable<T>;
     send(methodName: string, ...args: any[]): Observable<any>;
     hasSubscriptions(): boolean;
 }
 
 export class SignalRHub implements ISignalRHub {
-    private _useSharedConnection: boolean = true;
     private _connection: SignalR.Hub.Connection | undefined;
     private _proxy: SignalR.Hub.Proxy | undefined;
     private _startSubject = new Subject<void>();
@@ -87,19 +86,15 @@ export class SignalRHub implements ISignalRHub {
 
     options?: SignalR.ConnectionOptions;
 
-    constructor(public hubName: string, public url?: string) {
+    constructor(public hubName: string, public url?: string, public useSharedConnection: boolean = true) {
         this.start$ = this._startSubject.asObservable();
         this.state$ = this._stateSubject.asObservable();
         this.error$ = this._errorSubject.asObservable();
     }
 
-    start(useSharedConnection?: boolean, options?: SignalR.ConnectionOptions): Observable<void> {
-        if (useSharedConnection !== undefined) {
-            this._useSharedConnection = useSharedConnection;
-        }
-
+    start(options?: SignalR.ConnectionOptions): Observable<void> {
         if (!this._connection) {
-            const { connection, error } = createConnection(this.url, this._errorSubject, this._stateSubject, this._useSharedConnection);
+            const { connection, error } = createConnection(this.url, this._errorSubject, this._stateSubject, this.useSharedConnection);
             if (error) {
                 this._startSubject.error(error);
                 return throwError(error);
@@ -136,7 +131,7 @@ export class SignalRHub implements ISignalRHub {
 
     on<T>(event: string): Observable<T> {
         if (!this._connection) {
-            const { connection, error } = createConnection(this.url, this._errorSubject, this._stateSubject, this._useSharedConnection);
+            const { connection, error } = createConnection(this.url, this._errorSubject, this._stateSubject, this.useSharedConnection);
             if (error) {
                 this._startSubject.error(error);
                 return throwError(error);
@@ -235,7 +230,7 @@ export function findHub(x: string | { hubName: string, url?: string }, url?: str
     return hubs.filter(h => h.hubName === x.hubName && h.url === x.url)[0];
 };
 
-export const createHub = (hubName: string, url?: string): ISignalRHub | undefined => {
+export const createHub = (hubName: string, url?: string, useSharedConnection?: boolean): ISignalRHub | undefined => {
     if (testingEnabled) {
         const hub = hubCreationFunc(hubName, url);
         if (hub) {
@@ -245,7 +240,7 @@ export const createHub = (hubName: string, url?: string): ISignalRHub | undefine
         return undefined;
     }
 
-    const hub = new SignalRHub(hubName, url);
+    const hub = new SignalRHub(hubName, url, useSharedConnection || true);
     hubs.push(hub);
     return hub;
 }
