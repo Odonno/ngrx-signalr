@@ -1,7 +1,7 @@
 import { SignalRTestingHub } from "./hub";
 
 type HubCreationFunc = 
-    (hubName: string, url?: string | undefined) => SignalRTestingHub | undefined;
+    (hubName: string, url?: string) => SignalRTestingHub | undefined;
 
 export let testingEnabled = false;
 export let hubCreationFunc: HubCreationFunc;

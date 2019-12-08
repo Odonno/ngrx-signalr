@@ -203,9 +203,9 @@ interface ISignalRHub {
     state$: Observable<string>;
     error$: Observable<SignalR.ConnectionError>;
 
-    constructor(hubName: string, url: string | undefined);
+    constructor(hubName: string, url?: string, useSharedConnection?: boolean);
 
-    start(options?: SignalR.ConnectionOptions | undefined): Observable<void>;
+    start(options?: SignalR.ConnectionOptions): Observable<void>;
     stop(async?: boolean, notifyServer?: boolean): Observable<void>;
     on<T>(event: string): Observable<T>;
     send(method: string, ...args: any[]): Observable<any>;
@@ -216,7 +216,7 @@ interface ISignalRHub {
 You can find an existing hub by its name and url.
 
 ```ts
-function findHub(hubName: string, url?: string | undefined): ISignalRHub | undefined;
+function findHub(hubName: string, url?: string): ISignalRHub | undefined;
 function findHub({ hubName, url }: {
     hubName: string;
     url?: string | undefined;
@@ -226,7 +226,7 @@ function findHub({ hubName, url }: {
 And create a new hub.
 
 ```ts
-function createHub(hubName: string, url?: string | undefined): ISignalRHub;
+function createHub(hubName: string, url?: string, useSharedConnection?: boolean): ISignalRHub;
 ```
 
 ### State
@@ -269,7 +269,7 @@ class BaseSignalRStoreState {
 ```ts
 const createSignalRHub = createAction(
     '@ngrx/signalr/createHub',
-    props<{ hubName: string, url?: string | undefined }>()
+    props<{ hubName: string, url?: string, useSharedConnection?: boolean }>()
 );
 ```
 
@@ -278,7 +278,7 @@ const createSignalRHub = createAction(
 ```ts
 const startSignalRHub = createAction(
     '@ngrx/signalr/startHub',
-    props<{ hubName: string, url?: string | undefined, options?: SignalR.ConnectionOptions | undefined }>()
+    props<{ hubName: string, url?: string, options?: SignalR.ConnectionOptions }>()
 );
 ```
 
@@ -296,7 +296,7 @@ export const stopSignalRHub = createAction(
 ```ts
 export const hubNotFound = createAction(
     '@ngrx/signalr/hubNotFound',
-    props<{ hubName: string, url: string | undefined }>()
+    props<{ hubName: string, url: string }>()
 );
 ```
 

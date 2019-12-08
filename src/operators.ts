@@ -5,9 +5,9 @@ import { findHub, ISignalRHub } from "./hub";
 import { hubNotFound } from "./actions";
 import { HubKeyDefinition, HubAction } from "./models";
 
-export function ofHub(hubName: string, url?: string | undefined): MonoTypeOperatorFunction<HubAction>;
+export function ofHub(hubName: string, url?: string): MonoTypeOperatorFunction<HubAction>;
 export function ofHub({ hubName, url }: HubKeyDefinition): MonoTypeOperatorFunction<HubAction>;
-export function ofHub(x: string | HubKeyDefinition, url?: string | undefined): MonoTypeOperatorFunction<HubAction> {
+export function ofHub(x: string | HubKeyDefinition, url?: string): MonoTypeOperatorFunction<HubAction> {
     if (typeof x === 'string') {
         return filter((action: HubAction) => action.hubName === x && action.url === url);
     } else {

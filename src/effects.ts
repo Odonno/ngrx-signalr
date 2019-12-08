@@ -17,7 +17,7 @@ export class SignalREffects {
         this.actions$.pipe(
             ofType(createSignalRHub),
             mergeMap(action => {
-                const hub = createHub(action.hubName, action.url);
+                const hub = createHub(action.hubName, action.url, action.useSharedConnection);
                 if (!hub) {
                     return EMPTY;
                 }
