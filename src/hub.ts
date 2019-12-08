@@ -15,14 +15,14 @@ const getOrCreateCachedConnection = (url: string | undefined) => {
         if (!cachedConnections[url]) {
             cachedConnections[url] = $.hubConnection(url);
         }
-    
+
         return cachedConnections[url];
     }
 
     if (!localCachedConnection) {
         localCachedConnection = $.hubConnection(url);
     }
-    
+
     return localCachedConnection;
 }
 
@@ -67,6 +67,7 @@ export interface ISignalRHub {
     error$: Observable<SignalR.ConnectionError>;
 
     start(options?: SignalR.ConnectionOptions): Observable<void>;
+    stop(async?: boolean, notifyServer?: boolean): Observable<void>;
     on<T>(eventName: string): Observable<T>;
     send(methodName: string, ...args: any[]): Observable<any>;
     hasSubscriptions(): boolean;
@@ -76,11 +77,13 @@ export class SignalRHub implements ISignalRHub {
     private _connection: SignalR.Hub.Connection | undefined;
     private _proxy: SignalR.Hub.Proxy | undefined;
     private _startSubject = new Subject<void>();
+    private _stopSubject = new Subject<void>();
     private _stateSubject = new Subject<string>();
     private _errorSubject = new Subject<SignalR.ConnectionError>();
     private _subjects: { [name: string]: Subject<any> } = {};
 
     start$: Observable<void>;
+    stop$: Observable<void>;
     state$: Observable<string>;
     error$: Observable<SignalR.ConnectionError>;
 
@@ -88,6 +91,7 @@ export class SignalRHub implements ISignalRHub {
 
     constructor(public hubName: string, public url?: string, public useSharedConnection: boolean = true) {
         this.start$ = this._startSubject.asObservable();
+        this.stop$ = this._stopSubject.asObservable();
         this.state$ = this._stateSubject.asObservable();
         this.error$ = this._errorSubject.asObservable();
     }
@@ -129,6 +133,26 @@ export class SignalRHub implements ISignalRHub {
         return this._startSubject.asObservable();
     }
 
+    stop(async?: boolean, notifyServer?: boolean): Observable<void> {
+        setTimeout(() => {
+            if (!this._connection) {
+                const error = new Error('The connection has not been started yet. Please start the connection by invoking the start method before attempting to stop listening from the server.');
+
+                this._stopSubject.error(error);
+                return throwError(error);
+            }
+
+            try {
+                this._connection.stop(async, notifyServer);
+                this._stopSubject.next();
+            } catch (error) {
+                this._stopSubject.error(error);
+            }
+        }, 0);
+
+        return this._stopSubject.asObservable();
+    }
+
     on<T>(event: string): Observable<T> {
         if (!this._connection) {
             const { connection, error } = createConnection(this.url, this._errorSubject, this._stateSubject, this.useSharedConnection);
@@ -140,7 +164,8 @@ export class SignalRHub implements ISignalRHub {
             this._connection = connection;
 
             if (!this._connection) {
-                return throwError(new Error('Impossible to listen to the connection...'));
+                const error = new Error('Impossible to listen to the connection...');
+                return throwError(error);
             }
         }
 
@@ -156,7 +181,8 @@ export class SignalRHub implements ISignalRHub {
 
     send(method: string, ...args: any[]): Observable<any> {
         if (!this._connection) {
-            return throwError('The connection has not been started yet. Please start the connection by invoking the start method before attempting to send a message to the server.');
+            const error = new Error('The connection has not been started yet. Please start the connection by invoking the start method before attempting to send a message to the server.');
+            return throwError(error);
         }
 
         if (!this._proxy) {
@@ -179,11 +205,15 @@ export class SignalRHub implements ISignalRHub {
 
 export abstract class SignalRTestingHub implements ISignalRHub {
     private _startSubject = new Subject<void>();
+    private _stopSubject = new Subject<void>();
     private _stateSubject = new Subject<string>();
     private _errorSubject = new Subject<SignalR.ConnectionError>();
     private _subjects: { [eventName: string]: Subject<any> } = {};
 
     start$: Observable<void>;
+
+    stop$: Observable<void>;
+
     state$: Observable<string>;
     error$: Observable<SignalR.ConnectionError>;
 
@@ -191,6 +221,7 @@ export abstract class SignalRTestingHub implements ISignalRHub {
 
     constructor(public hubName: string, public url?: string) {
         this.start$ = this._startSubject.asObservable();
+        this.stop$ = this._startSubject.asObservable();
         this.state$ = this._stateSubject.asObservable();
         this.error$ = this._errorSubject.asObservable();
     }
@@ -202,6 +233,15 @@ export abstract class SignalRTestingHub implements ISignalRHub {
         });
 
         return this._startSubject.asObservable();
+    }
+
+    stop(async?: boolean, notifyServer?: boolean): Observable<void> {
+        timer(100).subscribe(_ => {
+            this._stopSubject.next();
+            this._stateSubject.next('disconnected');
+        });
+
+        return this._stopSubject.asObservable();
     }
 
     abstract on<T>(eventName: string): Observable<T>;

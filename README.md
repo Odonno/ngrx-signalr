@@ -197,14 +197,16 @@ The SignalR Hub is an abstraction of the hub connection. It contains function yo
 interface ISignalRHub {
     hubName: string;
     url: string | undefined;
-    
+
     start$: Observable<void>;
+    stop$: Observable<void>;
     state$: Observable<string>;
     error$: Observable<SignalR.ConnectionError>;
 
     constructor(hubName: string, url?: string, useSharedConnection?: boolean);
 
     start(options?: SignalR.ConnectionOptions): Observable<void>;
+    stop(async?: boolean, notifyServer?: boolean): Observable<void>;
     on<T>(event: string): Observable<T>;
     send(method: string, ...args: any[]): Observable<any>;
     hasSubscriptions(): boolean;
@@ -280,6 +282,15 @@ const startSignalRHub = createAction(
 );
 ```
 
+`stopSignalRHub` will stop the hub connection.
+
+```ts
+export const stopSignalRHub = createAction(
+    '@ngrx/signalr/stopHub',
+    props<{hubName: string, url?: string, async?: boolean, notifyServer?: boolean}>()
+)
+```
+
 `hubNotFound` can be used when you do retrieve your SignalR hub based on its name and url.
 
 ```ts
@@ -324,6 +335,10 @@ beforeStartHub$: Observable<{
 ```ts
 // start hub automatically
 startHub$: Observable<SignalRStartHubAction>;
+```
+```ts
+// stop hub 
+stopHub$: Observable<SignalRStopHubAction>;
 ```
 
 ### Selectors

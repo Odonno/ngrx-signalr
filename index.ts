@@ -9,6 +9,7 @@ export {
     SignalRAction,
     createSignalRHub,
     startSignalRHub,
+    stopSignalRHub,
     hubNotFound
 } from './src/actions';
 export { SignalREffects, createReconnectEffect } from './src/effects';
