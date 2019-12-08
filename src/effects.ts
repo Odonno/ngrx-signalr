@@ -92,7 +92,7 @@ export class SignalREffects {
             })
         )
     );
-
+    
     /**
      * Automatically stop hub based on actions dispatched.
      */
@@ -100,9 +100,7 @@ export class SignalREffects {
         this.actions$.pipe(
             ofType(stopSignalRHub),
             mergeMapHubToAction(({ hub, action }) => {
-                const stopAction = action as { async?: boolean, notifyServer?: boolean };
-                
-                return hub.stop(stopAction.async, stopAction.notifyServer).pipe(
+                return hub.stop(action.async, action.notifyServer).pipe(
                     mergeMap(_ => EMPTY),
                     catchError(error => of(signalrError({ hubName: hub.hubName, url: hub.url, error })))
                 );

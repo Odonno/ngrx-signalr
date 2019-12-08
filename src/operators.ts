@@ -46,50 +46,52 @@ export function ofHub(x: string | HubKeyDefinition, url?: string): MonoTypeOpera
  */
 export const mapToHub = () => map(findHub);
 
-type ObservableMapHubToActionInput = {
-    action: HubAction;
+type ObservableMapHubToActionInput<T extends Action> = {
+    action: T;
     hub: ISignalRHub;
 };
-type ObservableMapHubToActionFunc<T extends Action> =
-    (input: ObservableMapHubToActionInput) => Observable<T>;
+type ObservableMapHubToActionFunc<T extends Action, U> =
+    (input: ObservableMapHubToActionInput<T>) => Observable<U>;
 
 const hubAndActionOrNotFound =
-    <T extends Action>(func: ObservableMapHubToActionFunc<T>) =>
-        (action: HubAction) => {
-            const hub = findHub(action);
+    <T extends Action, U>(func: ObservableMapHubToActionFunc<T, U>) =>
+        (action: T) => {
+            const search = <HubAction><unknown>action;
+
+            const hub = findHub(search);
             if (!hub) {
-                return of(hubNotFound(action));
+                return of(hubNotFound(search));
             }
 
             return func({ action, hub });
         };
 
 /**
-* Map a hub action to a new object that contains 
-* both the original action and the SignalR hub instance, 
-* using `mergeMap` rxjs operator.
-* @param func A function that returns an Observable according to the given action and SignalR hub instance.
-*/
+ * Map a hub action to a new object that contains 
+ * both the original action and the SignalR hub instance, 
+ * using `mergeMap` rxjs operator.
+ * @param func A function that returns an Observable according to the given action and SignalR hub instance.
+ */
 export const mergeMapHubToAction =
-    <T extends Action>(func: ObservableMapHubToActionFunc<T>) =>
+    <T extends Action, U>(func: ObservableMapHubToActionFunc<T, U>) =>
         mergeMap(hubAndActionOrNotFound(func));
 
 /**
-* Map a hub action to a new object that contains 
-* both the original action and the SignalR hub instance, 
-* using `switchMap` rxjs operator.
-* @param func A function that returns an Observable according to the given action and SignalR hub instance.
-*/
+ * Map a hub action to a new object that contains 
+ * both the original action and the SignalR hub instance, 
+ * using `switchMap` rxjs operator.
+ * @param func A function that returns an Observable according to the given action and SignalR hub instance.
+ */
 export const switchMapHubToAction =
-    <T extends Action>(func: ObservableMapHubToActionFunc<T>) =>
+    <T extends Action, U>(func: ObservableMapHubToActionFunc<T, U>) =>
         switchMap(hubAndActionOrNotFound(func));
 
 /**
-* Map a hub action to a new object that contains 
-* both the original action and the SignalR hub instance, 
-* using `exhaustMap` rxjs operator.
-* @param func A function that returns an Observable according to the given action and SignalR hub instance.
-*/
+ * Map a hub action to a new object that contains 
+ * both the original action and the SignalR hub instance, 
+ * using `exhaustMap` rxjs operator.
+ * @param func A function that returns an Observable according to the given action and SignalR hub instance.
+ */
 export const exhaustMapHubToAction =
-    <T extends Action>(func: ObservableMapHubToActionFunc<T>) =>
+    <T extends Action, U>(func: ObservableMapHubToActionFunc<T, U>) =>
         exhaustMap(hubAndActionOrNotFound(func));
