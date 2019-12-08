@@ -15,14 +15,14 @@ const getOrCreateCachedConnection = (url: string | undefined) => {
         if (!cachedConnections[url]) {
             cachedConnections[url] = $.hubConnection(url);
         }
-    
+
         return cachedConnections[url];
     }
 
     if (!localCachedConnection) {
         localCachedConnection = $.hubConnection(url);
     }
-    
+
     return localCachedConnection;
 }
 
@@ -65,7 +65,7 @@ export interface ISignalRHub {
     start$: Observable<void>;
     state$: Observable<string>;
     error$: Observable<SignalR.ConnectionError>;
-    
+
     start(options?: SignalR.ConnectionOptions): Observable<void>;
     stop(async?: boolean, notifyServer?: boolean): Observable<void>;
     on<T>(eventName: string): Observable<T>;
@@ -94,20 +94,6 @@ export class SignalRHub implements ISignalRHub {
         this.stop$ = this._stopSubject.asObservable();
         this.state$ = this._stateSubject.asObservable();
         this.error$ = this._errorSubject.asObservable();
-    }
-
-    stop(async?: boolean, notifyServer?: boolean): Observable<void> {
-        setTimeout(() => {
-            if (this._connection) {
-                try {
-                    this._connection.stop(async, notifyServer);
-                    this._stopSubject.next();
-                } catch (error) {
-                    this._stopSubject.error(error);
-                }
-            }
-        }, 0);
-        return this._stopSubject.asObservable();
     }
 
     start(options?: SignalR.ConnectionOptions): Observable<void> {
@@ -147,6 +133,26 @@ export class SignalRHub implements ISignalRHub {
         return this._startSubject.asObservable();
     }
 
+    stop(async?: boolean, notifyServer?: boolean): Observable<void> {
+        setTimeout(() => {
+            if (!this._connection) {
+                const error = new Error('The connection has not been started yet. Please start the connection by invoking the start method before attempting to stop listening from the server.');
+
+                this._stopSubject.error(error);
+                return throwError(error);
+            }
+
+            try {
+                this._connection.stop(async, notifyServer);
+                this._stopSubject.next();
+            } catch (error) {
+                this._stopSubject.error(error);
+            }
+        }, 0);
+
+        return this._stopSubject.asObservable();
+    }
+
     on<T>(event: string): Observable<T> {
         if (!this._connection) {
             const { connection, error } = createConnection(this.url, this._errorSubject, this._stateSubject, this.useSharedConnection);
@@ -158,7 +164,8 @@ export class SignalRHub implements ISignalRHub {
             this._connection = connection;
 
             if (!this._connection) {
-                return throwError(new Error('Impossible to listen to the connection...'));
+                const error = new Error('Impossible to listen to the connection...');
+                return throwError(error);
             }
         }
 
@@ -174,7 +181,8 @@ export class SignalRHub implements ISignalRHub {
 
     send(method: string, ...args: any[]): Observable<any> {
         if (!this._connection) {
-            return throwError('The connection has not been started yet. Please start the connection by invoking the start method before attempting to send a message to the server.');
+            const error = new Error('The connection has not been started yet. Please start the connection by invoking the start method before attempting to send a message to the server.');
+            return throwError(error);
         }
 
         if (!this._proxy) {
@@ -230,9 +238,10 @@ export abstract class SignalRTestingHub implements ISignalRHub {
     stop(async?: boolean, notifyServer?: boolean): Observable<void> {
         timer(100).subscribe(_ => {
             this._stopSubject.next();
+            this._stateSubject.next('disconnected');
         });
 
-        return this._startSubject.asObservable();
+        return this._stopSubject.asObservable();
     }
 
     abstract on<T>(eventName: string): Observable<T>;

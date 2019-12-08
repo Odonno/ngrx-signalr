@@ -89,14 +89,15 @@ export class SignalREffects {
     stopHub$ = createEffect(() =>
         this.actions$.pipe(
             ofType(stopSignalRHub),
-            tap( action => {
+            tap(action => {
                 const hub = findHub(action);
                 if (hub) {
                     hub.stop(action.async, action.notifyServer);
                 }
             })
-        ), {dispatch: false}
-    )
+        ),
+        { dispatch: false }
+    );
 
     constructor(private actions$: Actions) { }
 }
