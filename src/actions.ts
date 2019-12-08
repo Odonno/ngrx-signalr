@@ -85,7 +85,7 @@ export const SIGNALR_ERROR = '@ngrx/signalr/error';
  */
 export const signalrError = createAction(
     SIGNALR_ERROR,
-    props<{ hubName: string, url?: string, error: SignalR.ConnectionError }>()
+    props<{ hubName: string, url?: string, error: Error }>()
 );
 
 /**
