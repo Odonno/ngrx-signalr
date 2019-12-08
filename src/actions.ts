@@ -1,5 +1,6 @@
 import 'signalr';
 import { createAction, props, union } from '@ngrx/store';
+import { SignalRExtendedConnectionOptions } from './models';
 
 /**
  * Action to dispatch in order to create a new SignalR hub.
@@ -23,7 +24,7 @@ export const signalrHubUnstarted = createAction(
  */
 export const startSignalRHub = createAction(
     '@ngrx/signalr/startHub',
-    props<{ hubName: string, url?: string, options?: SignalR.ConnectionOptions }>()
+    props<{ hubName: string, url?: string, options?: SignalR.ConnectionOptions, extendedOptions?: SignalRExtendedConnectionOptions }>()
 );
 
 /**

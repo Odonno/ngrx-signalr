@@ -43,7 +43,6 @@ export abstract class SignalRTestingHub implements ISignalRHub {
     }
 
     abstract on<T>(eventName: string): Observable<T>;
-
     abstract send(methodName: string, ...args: any[]): Observable<any>;
 
     hasSubscriptions(): boolean {

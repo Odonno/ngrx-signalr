@@ -21,4 +21,24 @@ export type HubFullDefinition = HubKeyDefinition & {
 export interface HubAction extends Action {
     hubName: string;
     url?: string;
-}
+};
+
+/**
+ * Extended options that can be passed to a Hub connection.
+ */
+export type SignalRExtendedConnectionOptions = {
+    /**
+     * Query string
+     */
+    qs: string | Object;
+
+    /**
+     * Reconnect delay
+     */
+    reconnectDelay: number;
+
+    /**
+     * Transport connect timeout
+     */
+    transportConnectTimeout: number;
+};

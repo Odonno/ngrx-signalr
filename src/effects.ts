@@ -84,8 +84,8 @@ export class SignalREffects {
     startHub$ = createEffect(() =>
         this.actions$.pipe(
             ofType(startSignalRHub),
-            mergeMapHubToAction(({ hub }) => {
-                return hub.start().pipe(
+            mergeMapHubToAction(({ hub, action }) => {
+                return hub.start(action.options, action.extendedOptions).pipe(
                     mergeMap(_ => EMPTY),
                     catchError(error => of(signalrError({ hubName: hub.hubName, url: hub.url, error })))
                 );

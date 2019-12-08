@@ -1,6 +1,7 @@
 import { ISignalRHub } from "./SignalRHub.interface";
 import { Subject, Observable, throwError, from } from "rxjs";
 import { createConnection, getOrCreateSubject } from "./hub";
+import { SignalRExtendedConnectionOptions } from "./models";
 
 export class SignalRHub implements ISignalRHub {
     private _connection?: SignalR.Hub.Connection;
@@ -17,6 +18,7 @@ export class SignalRHub implements ISignalRHub {
     error$: Observable<SignalR.ConnectionError>;
 
     options?: SignalR.ConnectionOptions;
+    extendedOptions?: SignalRExtendedConnectionOptions;
 
     constructor(public hubName: string, public url?: string, public useSharedConnection: boolean = true) {
         this.start$ = this._startSubject.asObservable();
@@ -25,7 +27,7 @@ export class SignalRHub implements ISignalRHub {
         this.error$ = this._errorSubject.asObservable();
     }
 
-    start(options?: SignalR.ConnectionOptions): Observable<void> {
+    start(options?: SignalR.ConnectionOptions, extendedOptions?: SignalRExtendedConnectionOptions): Observable<void> {
         if (!this._connection) {
             const { connection, error } = createConnection(this.url, this._errorSubject, this._stateSubject, this.useSharedConnection);
             if (error) {
@@ -48,6 +50,13 @@ export class SignalRHub implements ISignalRHub {
         }
 
         this.options = options;
+        this.extendedOptions = extendedOptions;
+
+        if (extendedOptions) {
+            this._connection.qs = extendedOptions.qs;
+            this._connection.reconnectDelay = extendedOptions.reconnectDelay;
+            this._connection.transportConnectTimeout = extendedOptions.transportConnectTimeout;
+        }
 
         if (options) {
             this._connection.start(options)

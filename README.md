@@ -211,18 +211,20 @@ The SignalR Hub is an abstraction of the hub connection. It contains function yo
 interface ISignalRHub {
     hubName: string;
     url?: string;
+    options?: SignalR.ConnectionOptions;
+    extendedOptions?: SignalRExtendedConnectionOptions;
+
+    constructor(hubName: string, url?: string, useSharedConnection?: boolean);
 
     start$: Observable<void>;
     stop$: Observable<void>;
     state$: Observable<string>;
     error$: Observable<SignalR.ConnectionError>;
 
-    constructor(hubName: string, url?: string, useSharedConnection?: boolean);
-
-    start(options?: SignalR.ConnectionOptions): Observable<void>;
+    start(options?: SignalR.ConnectionOptions, extendedOptions?: SignalRExtendedConnectionOptions): Observable<void>;
     stop(async?: boolean, notifyServer?: boolean): Observable<void>;
-    on<T>(event: string): Observable<T>;
-    send(method: string, ...args: any[]): Observable<any>;
+    on<T>(eventName: string): Observable<T>;
+    send(methodName: string, ...args: any[]): Observable<any>;
     hasSubscriptions(): boolean;
 }
 ```
@@ -298,7 +300,7 @@ const createSignalRHub = createAction(
 ```ts
 const startSignalRHub = createAction(
     '@ngrx/signalr/startHub',
-    props<{ hubName: string, url?: string, options?: SignalR.ConnectionOptions }>()
+    props<{ hubName: string, url?: string, options?: SignalR.ConnectionOptions, extendedOptions?: SignalRExtendedConnectionOptions }>()
 );
 ```
 

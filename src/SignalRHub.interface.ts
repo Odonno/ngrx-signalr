@@ -1,4 +1,5 @@
 import { Observable } from "rxjs";
+import { SignalRExtendedConnectionOptions } from "./models";
 
 /**
  * SignalR Hub instance that is built on top of @aspnet/signalr.
@@ -16,6 +17,10 @@ export interface ISignalRHub {
      * Configuration options of the hub.
      */
     options?: SignalR.ConnectionOptions;
+    /**
+     * Extended connection options of the hub.
+     */
+    extendedOptions?: SignalRExtendedConnectionOptions;
 
     /**
      * Observable that gives info when a start event occured.
@@ -38,7 +43,7 @@ export interface ISignalRHub {
      * Start the SignalR hub connection.
      * @param options Configuration options of the hub.
      */
-    start(options?: SignalR.ConnectionOptions): Observable<void>;
+    start(options?: SignalR.ConnectionOptions, extendedOptions?: SignalRExtendedConnectionOptions): Observable<void>;
     /**
      * Stop the SignalR hub connection.
      * @param async Whether or not to asynchronously abort the connection.
