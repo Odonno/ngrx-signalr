@@ -52,7 +52,9 @@ Once everything is installed, you can use the reducer and the effects inside the
 export class AppModule { }
 ```
 
-### Start with a single Hub
+<details>
+<summary>Start with a single Hub...</summary>
+<br>
 
 First, you will start the application by dispatching the creation of one Hub.
 
@@ -111,7 +113,11 @@ sendEvent$ = createEffect(() =>
 );
 ```
 
-### Using multiple Hubs
+</details>
+
+<details>
+<summary>...or use multiple Hubs</summary>
+<br>
 
 Now, start with multiple hubs at a time.
 
@@ -168,7 +174,11 @@ appStarted$ = createEffect(() =>
 );
 ```
 
-### Handling reconnection
+</details>
+
+<details>
+<summary>Handling reconnection</summary>
+<br>
 
 By design in .NET Framework, a SignalR client will attempt to reconnect to the server automatically until a specified threshold time is reached. Until we reached this limit (of 30 seconds by default), the hub is in `reconnecting` mode. After that, the hub switch to `disconnected` mode and no further attempt is made to reconnect.
 
@@ -183,9 +193,13 @@ In this example, we apply a periodic reconnection attempt every 10 seconds when 
 
 Of course, you can write your own `Effect` to you have the benefit to write your own reconnection pattern (periodic retry, exponential retry, etc..).
 
-## Features
+</details>
 
-### SignalR Hub
+## API features
+
+<details>
+<summary>SignalR Hub</summary>
+<br>
 
 The SignalR Hub is an abstraction of the hub connection. It contains function you can use to:
 
@@ -229,7 +243,11 @@ And create a new hub.
 function createHub(hubName: string, url?: string, useSharedConnection?: boolean): ISignalRHub;
 ```
 
-### State
+</details>
+
+<details>
+<summary>State</summary>
+<br>
 
 The state contains all existing hubs that was created with their according status (unstarted, connecting, connected, disconnected, reconnecting).
 
@@ -260,9 +278,11 @@ class BaseSignalRStoreState {
 }
 ```
 
-### Actions
+</details>
 
-#### Actions to dispatch
+<details>
+<summary>Actions</summary>
+<br>
 
 `createSignalRHub` will initialize a new hub connection but it won't start the connection so you can create event listeners.
 
@@ -300,48 +320,38 @@ export const hubNotFound = createAction(
 );
 ```
 
-### Effects
+</details>
+
+<details>
+<summary>Effects</summary>
+<br>
 
 ```ts
 // create hub automatically
-createHub$: Observable<{
-    type: string;
-    hubName: string;
-    url: string | undefined;
-}>;
+createHub$;
 ```
 
 ```ts
 // listen to start result (success/fail)
 // listen to change connection state (connecting, connected, disconnected, reconnecting)
 // listen to hub error
-beforeStartHub$: Observable<{
-    type: string;
-    hubName: string;
-    url: string | undefined;
-    error: any;
-} | {
-    type: string;
-    hubName: string;
-    url: string | undefined;
-} | {
-    type: string;
-    hubName: string;
-    url: string | undefined;
-    error: SignalR.ConnectionError;
-}>;
+beforeStartHub$;
 ```
 
 ```ts
 // start hub automatically
-startHub$: Observable<SignalRStartHubAction>;
+startHub$;
 ```
 ```ts
 // stop hub 
-stopHub$: Observable<SignalRStopHubAction>;
+stopHub$;
 ```
 
-### Selectors
+</details>
+
+<details>
+<summary>Selectors</summary>
+<br>
 
 ```ts
 // used to select all hub statuses in state
@@ -365,11 +375,4 @@ const hasHubState$ = store.pipe(
 );
 ```
 
-## Publish a new version
-
-First compile using `tsc` and then publish to npm registry.
-
-```
-tsc
-npm publish --access public
-```
+</details>
