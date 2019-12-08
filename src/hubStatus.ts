@@ -6,6 +6,9 @@ const connected = 'connected';
 const disconnected = 'disconnected';
 const reconnecting = 'reconnecting';
 
+/**
+ * List of given states a SignalR can be.
+ */
 export const SignalRStates = {
     unstarted,
     connecting,
@@ -14,6 +17,10 @@ export const SignalRStates = {
     reconnecting
 }
 
+/**
+ * Convert a hub connection state to the internal state value.
+ * @param state The state of the hub connection.
+ */
 export const toSignalRState = (state: SignalR.ConnectionState): string => {
     switch (state) {
         case SignalR.ConnectionState.Connecting:
@@ -27,6 +34,9 @@ export const toSignalRState = (state: SignalR.ConnectionState): string => {
     }
 }
 
+/**
+ * Connection state definition of a SignalR hub.
+ */
 export type SignalRHubState =
     | typeof unstarted
     | typeof connecting
@@ -34,6 +44,9 @@ export type SignalRHubState =
     | typeof disconnected
     | typeof reconnecting;
 
+/**
+* Status definition of a SignalR hub.
+*/
 export type SignalRHubStatus = HubKeyDefinition & {
     state: SignalRHubState;
 }

@@ -1,18 +1,23 @@
 import { Injectable } from "@angular/core";
 import { Actions, ofType, createEffect } from "@ngrx/effects";
-import { of, merge, EMPTY, fromEvent, timer } from "rxjs";
-import { map, mergeMap, catchError, tap, startWith, switchMap, takeUntil, groupBy } from 'rxjs/operators';
+import { of, merge, EMPTY, timer } from "rxjs";
+import { map, mergeMap, catchError, tap, switchMap, takeUntil, groupBy } from 'rxjs/operators';
 
 import { findHub, createHub } from "./hub";
 import { createSignalRHub, signalrHubUnstarted, signalrHubFailedToStart, signalrConnected, signalrDisconnected, signalrError, startSignalRHub, signalrConnecting, signalrReconnecting, stopSignalRHub } from "./actions";
-import { ofHub, exhaustMapHubToAction } from "./operators";
+import { ofHub, exhaustMapHubToAction, isOnline } from "./operators";
 import { Action } from "@ngrx/store";
 
 @Injectable({
     providedIn: 'root'
 })
+/**
+ * Collection of effects to execute realtime events (hub creation, starting, stopping, etc..).
+ */
 export class SignalREffects {
-    // handle hub creation (then hub unstarted by default)
+    /**
+     * Automatically create a new SignalR hub (then set hub state to `unstarted` by default).
+     */
     createHub$ = createEffect(() =>
         this.actions$.pipe(
             ofType(createSignalRHub),
@@ -27,9 +32,12 @@ export class SignalREffects {
         )
     );
 
-    // listen to start result (success/fail)
-    // listen to change connection state (connecting, connected, disconnected, reconnecting)
-    // listen to hub error
+    /**
+     * Listen to every change on the SignalR hub.
+     * Listen to start result (success/fail).
+     * Listen to change connection state (connecting, connected, disconnected, reconnecting).
+     * Listen to hub error.
+     */
     beforeStartHub$ = createEffect(() =>
         this.actions$.pipe(
             ofType(signalrHubUnstarted),
@@ -72,7 +80,9 @@ export class SignalREffects {
         )
     );
 
-    // start hub
+    /**
+     * Automatically start hub based on actions dispatched.
+     */
     startHub$ = createEffect(() =>
         this.actions$.pipe(
             ofType(startSignalRHub),
@@ -86,6 +96,9 @@ export class SignalREffects {
         { dispatch: false }
     );
 
+    /**
+     * Automatically stop hub based on actions dispatched.
+     */
     stopHub$ = createEffect(() =>
         this.actions$.pipe(
             ofType(stopSignalRHub),
@@ -102,18 +115,11 @@ export class SignalREffects {
     constructor(private actions$: Actions) { }
 }
 
-
-const offline$ = fromEvent(window, 'offline').pipe(
-    map(() => false)
-);
-const online$ = fromEvent(window, 'online').pipe(
-    map(() => true)
-);
-
-const isOnline = () => merge(offline$, online$).pipe(
-    startWith(navigator.onLine)
-);
-
+/**
+ * Create an @ngrx effect to handle SignalR reconnection automatically.
+ * @param actions$ Observable of all actions dispatched in the current app.
+ * @param intervalTimespan Timespan between each reconnection attempt (in milliseconds).
+ */
 export const createReconnectEffect = (actions$: Actions<Action>, intervalTimespan: number) => {
     return createEffect(() =>
         actions$.pipe(
