@@ -210,7 +210,7 @@ The SignalR Hub is an abstraction of the hub connection. It contains function yo
 ```ts
 interface ISignalRHub {
     hubName: string;
-    url: string | undefined;
+    url?: string;
 
     start$: Observable<void>;
     stop$: Observable<void>;
@@ -233,7 +233,7 @@ You can find an existing hub by its name and url.
 function findHub(hubName: string, url?: string): ISignalRHub | undefined;
 function findHub({ hubName, url }: {
     hubName: string;
-    url?: string | undefined;
+    url?: string;
 }): ISignalRHub | undefined;
 ```
 
@@ -267,7 +267,7 @@ type SignalRHubState =
 
 type SignalRHubStatus = {
     hubName: string;
-    url: string | undefined;
+    url?: string;
     state: SignalRHubState;
 };
 ```

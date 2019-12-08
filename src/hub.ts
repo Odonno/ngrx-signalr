@@ -10,7 +10,7 @@ const getOrCreateSubject = <T>(subjects: { [name: string]: Subject<any> }, event
 let localCachedConnection: SignalR.Hub.Connection | undefined = undefined;
 const cachedConnections: { [url: string]: SignalR.Hub.Connection } = {};
 
-const getOrCreateCachedConnection = (url: string | undefined) => {
+const getOrCreateCachedConnection = (url?: string) => {
     if (url) {
         if (!cachedConnections[url]) {
             cachedConnections[url] = $.hubConnection(url);
@@ -74,8 +74,8 @@ export interface ISignalRHub {
 }
 
 export class SignalRHub implements ISignalRHub {
-    private _connection: SignalR.Hub.Connection | undefined;
-    private _proxy: SignalR.Hub.Proxy | undefined;
+    private _connection?: SignalR.Hub.Connection;
+    private _proxy?: SignalR.Hub.Proxy;
     private _startSubject = new Subject<void>();
     private _stopSubject = new Subject<void>();
     private _stateSubject = new Subject<string>();
