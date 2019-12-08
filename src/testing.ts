@@ -1,4 +1,4 @@
-import { SignalRTestingHub } from "./hub";
+import { SignalRTestingHub } from "./SignalRHub.testing";
 
 type HubCreationFunc = 
     (hubName: string, url?: string) => SignalRTestingHub | undefined;
