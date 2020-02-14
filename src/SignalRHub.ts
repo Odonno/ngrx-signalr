@@ -54,8 +54,8 @@ export class SignalRHub implements ISignalRHub {
 
         if (extendedOptions) {
             this._connection.qs = extendedOptions.qs;
-            this._connection.reconnectDelay = extendedOptions.reconnectDelay || 10000;
-            this._connection.transportConnectTimeout = extendedOptions.transportConnectTimeout || 30000;
+            this._connection.reconnectDelay = extendedOptions.reconnectDelay || 2000;
+            this._connection.transportConnectTimeout = extendedOptions.transportConnectTimeout || 0;
         }
 
         if (options) {
