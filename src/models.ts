@@ -30,15 +30,15 @@ export type SignalRExtendedConnectionOptions = {
     /**
      * Query string
      */
-    qs: string | Object;
+    qs?: string | Object;
 
     /**
      * Reconnect delay
      */
-    reconnectDelay: number;
+    reconnectDelay?: number;
 
     /**
      * Transport connect timeout
      */
-    transportConnectTimeout: number;
+    transportConnectTimeout?: number;
 };
