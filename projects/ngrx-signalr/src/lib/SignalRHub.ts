@@ -1,7 +1,7 @@
 import { ISignalRHub } from "./SignalRHub.interface";
 import { Subject, Observable, throwError, from } from "rxjs";
-import { createConnection, getOrCreateSubject } from "./hub";
 import { SignalRExtendedConnectionOptions } from "./models";
+import { createConnection, getOrCreateSubject } from './signalr';
 
 export class SignalRHub implements ISignalRHub {
     private _connection?: SignalR.Hub.Connection;
