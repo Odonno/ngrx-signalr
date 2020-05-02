@@ -1,6 +1,6 @@
 {
   "name": "ngrx-signalr",
-  "version": "8.2.0",
+  "version": "8.2.1",
   "description": "A library to handle realtime SignalR events using angular and rxjs",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -25,7 +25,7 @@
     "@ngrx/store": "^8.6.0",
     "@types/node": "^10.12.19",
     "@types/signalr": "^2.2.35",
-    "jquery": "^3.4.1",
+    "jquery": "^3.5.0",
     "signalr": "^2.4.0",
     "typescript": "^3.4.5"
   },
@@ -34,7 +34,7 @@
     "@angular/core": ">=8.0.0",
     "@ngrx/effects": ">=8.0.0",
     "@ngrx/store": ">=8.0.0",
-    "jquery": ">=3.4.0",
+    "jquery": ">=3.5.0",
     "rxjs": ">=6.0.0",
     "signalr": ">=2.4.0"
   }
